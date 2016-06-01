@@ -15,15 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="publisher.cpp">
+    <ClCompile Include="P_main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Publisher.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Publisher.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="util\CircularQueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFactory.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

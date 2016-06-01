@@ -24,15 +24,21 @@
     <ClInclude Include="Decoder\tdll.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="util\CircularQueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="consumer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Decoder\h264decoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="C_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Decoder\dec_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Consumer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

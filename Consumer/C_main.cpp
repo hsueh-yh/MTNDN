@@ -14,9 +14,9 @@ int main(int argc, char** argv)
 		// Counter holds data used by the callbacks.
 		Consumer consumer;
 
-		char tmp[20]="/video/01";
+		char tmp[20]="/vide1/01";
 		Name name;
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 200; i++)
 		{
 			//Name name("/video/");
 			

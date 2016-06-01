@@ -1,17 +1,55 @@
 #include "Consumer.h"
 
 
-Consumer::Consumer() {
-	callbackCount_ = 0;
+Consumer::Consumer () :
+	recv_buf ( new CirQueue<frame_buf> ( 20 ) ),
+	callbackCount_ ( 0 )
+{
+	pthread_mutex_init ( &recv_buf_mutex, NULL );
+	
+	
+	pf = fopen ( "consumer.264", "wb+" );
+	if ( pf == NULL )
+	{
+		cout << "open consumer.264 error" << endl;
+		return;
+	}
+}
+
+Consumer::~Consumer ()
+{
+	while ( 0 != pthread_mutex_destroy ( &recv_buf_mutex ));
+	fclose ( pf );
 }
 
 
 void Consumer::onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data)
 {
 	++callbackCount_;
-	cout << "Got data packet with name " << data->getName().toUri() << endl;
-	for (size_t i = 0; i < data->getContent().size(); ++i)
-		cout << (*data->getContent())[i];
+	cout << "Got data "<< data->getName().toUri();
+	cout << " size: " << data->getContent ().size () << endl;
+	if ( data->getContent ().buf () == NULL )
+		cout << "content is null !" << endl;
+
+	frame_buf tmpbuf;
+	memcpy ( &( tmpbuf.p_In_Frame ), data->getContent ().buf (), data->getContent ().size () );
+	tmpbuf.size = data->getContent ().size ();
+	
+	cout << "write ring buffer... ";
+	// write ring buffer
+	while ( 0 != pthread_mutex_lock ( &recv_buf_mutex ) );
+	recv_buf->Push ( tmpbuf  );
+	cout << recv_buf->size () << " ";
+	while ( 0 != pthread_mutex_unlock ( &recv_buf_mutex ) );
+	cout << " done." << endl;
+
+	/*while ( 0 != pthread_mutex_lock ( &recv_buf_mutex ) );
+	frame_buf ptmpbuf = recv_buf->Pop ();
+	while ( 0 != pthread_mutex_unlock ( &recv_buf_mutex ) );
+
+	cout <<"size: " << ptmpbuf.size << endl;
+	fwrite ( &(ptmpbuf.p_In_Frame), ptmpbuf.size, 1, pf );*/
+
 	cout << endl;
 }
 
