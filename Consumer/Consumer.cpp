@@ -43,12 +43,12 @@ void Consumer::onData(const ptr_lib::shared_ptr<const Interest>& interest, const
 	while ( 0 != pthread_mutex_unlock ( &recv_buf_mutex ) );
 	cout << " done." << endl;
 
-	/*while ( 0 != pthread_mutex_lock ( &recv_buf_mutex ) );
+	while ( 0 != pthread_mutex_lock ( &recv_buf_mutex ) );
 	frame_buf ptmpbuf = recv_buf->Pop ();
 	while ( 0 != pthread_mutex_unlock ( &recv_buf_mutex ) );
 
 	cout <<"size: " << ptmpbuf.size << endl;
-	fwrite ( &(ptmpbuf.p_In_Frame), ptmpbuf.size, 1, pf );*/
+	fwrite ( &(ptmpbuf.p_In_Frame), ptmpbuf.size, 1, pf );
 
 	cout << endl;
 }
