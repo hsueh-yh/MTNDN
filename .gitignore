@@ -4,13 +4,13 @@
 !.gitignore
 !README
 !Makefile
-!/include
+!/include/
 !*.h
 !*.c
 !*.cpp
 
 
-
+!/Consumer/
 !/Consumer/Makefile
 !/Consumer/*.h
 !/Consumer/*.cpp
@@ -19,7 +19,7 @@
 !/Consumer/Decoder/*.cpp
 
 
-
+!/Publisher/
 !/Publisher/Makefile
 !/Publisher/*.h
 !/Publisher/*.cpp
