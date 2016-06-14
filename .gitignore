@@ -4,8 +4,6 @@
 !.gitignore
 !README
 !Makefile
-!/include
-!/include/*
 !*.h
 !*.c
 !*.cpp
