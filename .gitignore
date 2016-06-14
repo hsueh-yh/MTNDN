@@ -1,5 +1,4 @@
 
-#project file
 
 *
 !.gitignore
@@ -10,9 +9,8 @@
 !*.c
 !*.cpp
 
-# Consumer project
 
-/Consumer/*
+
 !/Consumer/Makefile
 !/Consumer/*.h
 !/Consumer/*.cpp
@@ -21,11 +19,9 @@
 !/Consumer/Decoder/*.cpp
 
 
-# Publisher project
 
-/Publisher/*
-/Publisher/out.264
 !/Publisher/Makefile
 !/Publisher/*.h
 !/Publisher/*.cpp
 !/Publisher/util
+/Publisher/out.264
