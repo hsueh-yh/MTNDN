@@ -1,0 +1,26 @@
+
+#project file
+
+*
+!.gitignore
+!README
+!Makefile
+!/include
+
+# Consumer project
+
+!/Consumer/Makefile
+!/Consumer/*.h
+!/Consumer/*.cpp
+!/Consumer/utile/
+!/Consumer/Decoder/*.h
+!/Consumer/Decoder/*.cpp
+
+
+# Publisher project
+
+/Publisher/out.264
+!/Publisher/Makefile
+!/Publisher/*.h
+!/Publisher/*.cpp
+!/Publisher/util
