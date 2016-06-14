@@ -6,6 +6,9 @@
 !README
 !Makefile
 !/include
+!*.h
+!*.c
+!*.cpp
 
 # Consumer project
 
