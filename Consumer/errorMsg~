@@ -1,0 +1,26 @@
+g++  -g -O2 -std=c++11 -I/usr/include -L/usr/lib/x86_64-linux-gnu  -o consumer ./util/* ./*.h ./*.cpp  -lboost_thread -lboost_system -lboost_chrono -lboost_regex -lboost_timer -lboost_signals -lboost_atomic -lboost_program_options -Wl,-rpath /usr/local/lib/ -L/usr/local/lib -lndn-cpp -lpthread -lprotobuf -lsqlite3 -lcrypto
+./face-wrapper.cpp: In member function ‘uint64_t FaceWrapper::registerPrefix(const ndn::Name&, const OnInterest&, const OnRegisterFailed&, const ndn::ForwardingFlags&, ndn::WireFormat&)’:
+./face-wrapper.cpp:63:26: warning: ‘uint64_t ndn::Face::registerPrefix(const ndn::Name&, const OnInterest&, const OnRegisterFailed&, const ndn::ForwardingFlags&, ndn::WireFormat&)’ is deprecated (declared at /usr/local/include/ndn-cpp/face.hpp:361) [-Wdeprecated-declarations]
+         flags, wireFormat);
+                          ^
+./object.cpp: In member function ‘void NdnRtcComponent::scheduleJob(unsigned int, boost::function<bool()>)’:
+./object.cpp:148:78: error: no matching function for call to ‘boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>::expires_from_now(boost::chrono::microseconds)’
+     watchdogTimer_.expires_from_now(boost::chrono::microseconds(usecInterval));
+                                                                              ^
+./object.cpp:148:78: note: candidates are:
+In file included from /usr/include/boost/asio/steady_timer.hpp:30:0,
+                 from ./object.h:18,
+                 from ./object.cpp:17:
+/usr/include/boost/asio/basic_waitable_timer.hpp:387:12: note: boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::duration boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::expires_from_now() const [with Clock = std::chrono::_V2::steady_clock; WaitTraits = boost::asio::wait_traits<std::chrono::_V2::steady_clock>; WaitableTimerService = boost::asio::waitable_timer_service<std::chrono::_V2::steady_clock, boost::asio::wait_traits<std::chrono::_V2::steady_clock> >; boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::duration = std::chrono::duration<long int, std::ratio<1l, 1000000000l> >]
+   duration expires_from_now() const
+            ^
+/usr/include/boost/asio/basic_waitable_timer.hpp:387:12: note:   candidate expects 0 arguments, 1 provided
+/usr/include/boost/asio/basic_waitable_timer.hpp:414:15: note: std::size_t boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::expires_from_now(const duration&) [with Clock = std::chrono::_V2::steady_clock; WaitTraits = boost::asio::wait_traits<std::chrono::_V2::steady_clock>; WaitableTimerService = boost::asio::waitable_timer_service<std::chrono::_V2::steady_clock, boost::asio::wait_traits<std::chrono::_V2::steady_clock> >; std::size_t = long unsigned int; boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::duration = std::chrono::duration<long int, std::ratio<1l, 1000000000l> >]
+   std::size_t expires_from_now(const duration& expiry_time)
+               ^
+/usr/include/boost/asio/basic_waitable_timer.hpp:414:15: note:   no known conversion for argument 1 from ‘boost::chrono::microseconds {aka boost::chrono::duration<long int, boost::ratio<1l, 1000000l> >}’ to ‘const duration& {aka const std::chrono::duration<long int, std::ratio<1l, 1000000000l> >&}’
+/usr/include/boost/asio/basic_waitable_timer.hpp:445:15: note: std::size_t boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::expires_from_now(const duration&, boost::system::error_code&) [with Clock = std::chrono::_V2::steady_clock; WaitTraits = boost::asio::wait_traits<std::chrono::_V2::steady_clock>; WaitableTimerService = boost::asio::waitable_timer_service<std::chrono::_V2::steady_clock, boost::asio::wait_traits<std::chrono::_V2::steady_clock> >; std::size_t = long unsigned int; boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::duration = std::chrono::duration<long int, std::ratio<1l, 1000000000l> >]
+   std::size_t expires_from_now(const duration& expiry_time,
+               ^
+/usr/include/boost/asio/basic_waitable_timer.hpp:445:15: note:   candidate expects 2 arguments, 1 provided
+

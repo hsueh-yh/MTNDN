@@ -1,0 +1,39 @@
+g++  -g -O2 -std=c++11 -I/usr/include -L/usr/lib/x86_64-linux-gnu  -o consumer ./util/* ./*.h ./*.cpp  -lboost_thread -lboost_system -lboost_chrono -lboost_regex -Wl,-rpath /usr/local/lib/ -L/usr/local/lib -lndn-cpp -lpthread -lprotobuf -lsqlite3 -lcrypto
+./face-wrapper.cpp: In member function ‘uint64_t FaceWrapper::registerPrefix(const ndn::Name&, const OnInterest&, const OnRegisterFailed&, const ndn::ForwardingFlags&, ndn::WireFormat&)’:
+./face-wrapper.cpp:68:26: warning: ‘uint64_t ndn::Face::registerPrefix(const ndn::Name&, const OnInterest&, const OnRegisterFailed&, const ndn::ForwardingFlags&, ndn::WireFormat&)’ is deprecated (declared at /usr/local/include/ndn-cpp/face.hpp:361) [-Wdeprecated-declarations]
+         flags, wireFormat);
+                          ^
+./object.cpp: In constructor ‘NdnRtcComponent::NdnRtcComponent()’:
+./object.cpp:28:34: error: no matching function for call to ‘boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>::basic_waitable_timer()’
+ NdnRtcComponent::NdnRtcComponent()/*:
+                                  ^
+./object.cpp:28:34: note: candidates are:
+In file included from /usr/include/boost/asio/steady_timer.hpp:30:0,
+                 from ./object.h:18,
+                 from ./object.cpp:17:
+/usr/include/boost/asio/basic_waitable_timer.hpp:186:3: note: boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::basic_waitable_timer(boost::asio::io_service&, const duration&) [with Clock = std::chrono::_V2::steady_clock; WaitTraits = boost::asio::wait_traits<std::chrono::_V2::steady_clock>; WaitableTimerService = boost::asio::waitable_timer_service<std::chrono::_V2::steady_clock, boost::asio::wait_traits<std::chrono::_V2::steady_clock> >; boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::duration = std::chrono::duration<long int, std::ratio<1l, 1000000000l> >]
+   basic_waitable_timer(boost::asio::io_service& io_service,
+   ^
+/usr/include/boost/asio/basic_waitable_timer.hpp:186:3: note:   candidate expects 2 arguments, 0 provided
+/usr/include/boost/asio/basic_waitable_timer.hpp:167:3: note: boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::basic_waitable_timer(boost::asio::io_service&, const time_point&) [with Clock = std::chrono::_V2::steady_clock; WaitTraits = boost::asio::wait_traits<std::chrono::_V2::steady_clock>; WaitableTimerService = boost::asio::waitable_timer_service<std::chrono::_V2::steady_clock, boost::asio::wait_traits<std::chrono::_V2::steady_clock> >; boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::time_point = std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<long int, std::ratio<1l, 1000000000l> > >]
+   basic_waitable_timer(boost::asio::io_service& io_service,
+   ^
+/usr/include/boost/asio/basic_waitable_timer.hpp:167:3: note:   candidate expects 2 arguments, 0 provided
+/usr/include/boost/asio/basic_waitable_timer.hpp:152:12: note: boost::asio::basic_waitable_timer<Clock, WaitTraits, WaitableTimerService>::basic_waitable_timer(boost::asio::io_service&) [with Clock = std::chrono::_V2::steady_clock; WaitTraits = boost::asio::wait_traits<std::chrono::_V2::steady_clock>; WaitableTimerService = boost::asio::waitable_timer_service<std::chrono::_V2::steady_clock, boost::asio::wait_traits<std::chrono::_V2::steady_clock> >]
+   explicit basic_waitable_timer(boost::asio::io_service& io_service)
+            ^
+/usr/include/boost/asio/basic_waitable_timer.hpp:152:12: note:   candidate expects 1 argument, 0 provided
+./object.cpp:34:16: error: no match for ‘operator=’ (operand types are ‘boost::asio::steady_timer {aka boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>}’ and ‘boost::asio::io_service’)
+  watchdogTimer_=NdnRtcUtils::getIoService();
+                ^
+./object.cpp:34:16: note: candidates are:
+In file included from /usr/include/boost/asio/steady_timer.hpp:30:0,
+                 from ./object.h:18,
+                 from ./object.cpp:17:
+/usr/include/boost/asio/basic_waitable_timer.hpp:127:7: note: boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>& boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>::operator=(const boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>&) <deleted>
+ class basic_waitable_timer
+       ^
+/usr/include/boost/asio/basic_waitable_timer.hpp:127:7: note:   no known conversion for argument 1 from ‘boost::asio::io_service’ to ‘const boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>&’
+/usr/include/boost/asio/basic_waitable_timer.hpp:127:7: note: boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>& boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>::operator=(boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>&&) <deleted>
+/usr/include/boost/asio/basic_waitable_timer.hpp:127:7: note:   no known conversion for argument 1 from ‘boost::asio::io_service’ to ‘boost::asio::basic_waitable_timer<std::chrono::_V2::steady_clock>&&’
+make: *** [consumer] 

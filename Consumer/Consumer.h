@@ -1,6 +1,9 @@
 #include <pthread.h>
 #include <ndn-cpp/face.hpp>
 #include "util/CircularQueue.h"
+#include "utils.h"
+#include "object.h"
+#include "face-wrapper.h"
 
 using namespace std;
 using namespace ndn;
@@ -21,7 +24,7 @@ struct frame_buf
 class Consumer
 {
 public:
-	Consumer ();
+	Consumer ( boost::shared_ptr<FaceWrapper> faceWrapper );
 
 
 	~Consumer ();
@@ -34,6 +37,8 @@ public:
 	
 
 	int callbackCount_;
+
+	boost::shared_ptr<FaceWrapper> faceWrapper_;
 
 
 private:
