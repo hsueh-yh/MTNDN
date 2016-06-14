@@ -14,7 +14,8 @@
 !/Consumer/Makefile
 !/Consumer/*.h
 !/Consumer/*.cpp
-!/Consumer/utile/
+!/Consumer/util/
+!/Consumer/Decoder/
 !/Consumer/Decoder/*.h
 !/Consumer/Decoder/*.cpp
 
@@ -23,5 +24,5 @@
 !/Publisher/Makefile
 !/Publisher/*.h
 !/Publisher/*.cpp
-!/Publisher/util
+!/Publisher/util/
 /Publisher/out.264
