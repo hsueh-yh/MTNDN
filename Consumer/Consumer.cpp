@@ -1,7 +1,9 @@
 #include "Consumer.h"
 
 
-Consumer::Consumer () :
+
+Consumer::Consumer (boost::shared_ptr<FaceWrapper> faceWrapper) :
+	faceWrapper_( faceWrapper ),
 	recv_buf ( new CirQueue<frame_buf> ( 20 ) ),
 	callbackCount_ ( 0 )
 {
@@ -25,6 +27,7 @@ Consumer::~Consumer ()
 
 void Consumer::onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data)
 {
+	std::cout<<"onData:"<<std::endl;
 	++callbackCount_;
 	cout << "Got data "<< data->getName().toUri();
 	cout << " size: " << data->getContent ().size () << endl;
@@ -55,6 +58,7 @@ void Consumer::onData(const ptr_lib::shared_ptr<const Interest>& interest, const
 
 void Consumer::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
+	std::cout<<"onTimeout:"<<std::endl;
 	++callbackCount_;
 	cout << "Time out for interest " << interest->getName().toUri() << endl;
 }
