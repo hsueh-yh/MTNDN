@@ -12,6 +12,7 @@
 
 # Consumer project
 
+/Consumer/*
 !/Consumer/Makefile
 !/Consumer/*.h
 !/Consumer/*.cpp
@@ -22,6 +23,7 @@
 
 # Publisher project
 
+/Publisher/*
 /Publisher/out.264
 !/Publisher/Makefile
 !/Publisher/*.h
