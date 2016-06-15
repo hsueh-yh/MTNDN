@@ -1,9 +1,19 @@
 #include <pthread.h>
 #include <ndn-cpp/face.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <cstdlib>
+#include <iostream>
+#include <time.h>
+#include <unistd.h>
+#include <thread>
+
 #include "util/CircularQueue.h"
 #include "utils.h"
 #include "object.h"
 #include "face-wrapper.h"
+#include "frame-buffer.h"
+#include "pipeliner.h"
 
 using namespace std;
 using namespace ndn;
@@ -24,14 +34,16 @@ struct frame_buf
 class Consumer
 {
 public:
-	Consumer ( boost::shared_ptr<FaceWrapper> faceWrapper );
-
+	Consumer ();
 
 	~Consumer ();
 
+	void init();
 
-	void onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data);
-	
+	void start();
+
+	void onData(const ptr_lib::shared_ptr<const Interest>& interest,
+				const ptr_lib::shared_ptr<Data>& data);
 
 	void onTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
 	
@@ -39,13 +51,16 @@ public:
 	int callbackCount_;
 
 	boost::shared_ptr<FaceWrapper> faceWrapper_;
-
+	boost::shared_ptr<FrameBuffer> frameBuffer_;
+	boost::shared_ptr<Pipeliner> pipeliner_;
 
 private:
 
 	FILE *pf;
 	
-	CirQueue<frame_buf> *recv_buf;
-	pthread_mutex_t recv_buf_mutex;
+
+
+	//CirQueue<frame_buf> *recv_buf;
+	//pthread_mutex_t recv_buf_mutex;
 };
 
