@@ -1,32 +1,98 @@
 #include "Consumer.h"
 
 
+static boost::asio::io_service libIoService;
 
-Consumer::Consumer (boost::shared_ptr<FaceWrapper> faceWrapper) :
-	faceWrapper_( faceWrapper ),
-	recv_buf ( new CirQueue<frame_buf> ( 20 ) ),
+Consumer::Consumer () :
+	//recv_buf ( new CirQueue<frame_buf> ( 20 ) ),
 	callbackCount_ ( 0 )
 {
-	pthread_mutex_init ( &recv_buf_mutex, NULL );
+	std::cout << "new consumer " << endl;
+	NdnRtcUtils::setIoService(libIoService);
+
+	//NdnRtcUtils::performOnBackgroundThread([=]()->void{
+			NdnRtcUtils::createLibFace();
+	//});
+	NdnRtcUtils::startBackgroundThread();
+
+	// Counter holds data used by the callbacks.
+	//Consumer consumer(NdnRtcUtils::getLibFace()->getFaceWrapper());
+	faceWrapper_ = NdnRtcUtils::getLibFace()->getFaceWrapper();
+	//pthread_mutex_init ( &recv_buf_mutex, NULL );
 	
-	
+	///*
 	pf = fopen ( "consumer.264", "wb+" );
 	if ( pf == NULL )
 	{
 		cout << "open consumer.264 error" << endl;
 		return;
 	}
+	//*/
 }
 
 Consumer::~Consumer ()
 {
-	while ( 0 != pthread_mutex_destroy ( &recv_buf_mutex ));
+	//while ( 0 != pthread_mutex_destroy ( &recv_buf_mutex ));
 	fclose ( pf );
+}
+
+
+void Consumer::init()
+{
+	std::cout << "init consumer " << endl;
+	frameBuffer_.reset(new FrameBuffer());
+	pipeliner_.reset(new Pipeliner(frameBuffer_));
+}
+
+
+void Consumer::start()
+{
+	std::cout << "start consumer " << endl;
+	try {
+			char tmp[20]="/vide1/01";
+			Name name;
+			cout << "sending interests..." << endl;
+			for (int i = 0; i < 200; i++)
+			{
+				//Name name("/video/");
+
+				tmp[8]=i+'0';
+
+				name.set(tmp);
+				time_t rawtime;
+				time(&rawtime);
+				name.appendTimestamp(rawtime);
+
+				cout << "Express name " << i << " " << name.toUri() << endl;
+				// Use bind to pass the counter object to the callbacks.
+				faceWrapper_->expressInterest(
+						name,
+						bind(&Pipeliner::onData, pipeliner_.get(), _1, _2),
+						bind(&Pipeliner::onTimeout, pipeliner_.get(), _1));
+
+			}
+
+
+			//ioservice thread is running
+			//while(1);
+			sleep(5);
+			cout << endl << "start write" << endl<< endl<< endl;
+			for ( int i = 0; i < 200; i++ )
+			{
+				FrameBuffer::Slot *slot = frameBuffer_->getFrame();
+				std::cout << i << " write " << slot->getFrameSize() << std::endl;
+				fwrite ( slot->getDataPtr(), slot->getFrameSize(), 1, pf );
+			}
+		}
+		catch (std::exception& e) {
+			cout << "exception: " << e.what() << endl;
+		}
 }
 
 
 void Consumer::onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data)
 {
+	/*
 	std::cout<<"onData:"<<std::endl;
 	++callbackCount_;
 	cout << "Got data "<< data->getName().toUri();
@@ -54,6 +120,7 @@ void Consumer::onData(const ptr_lib::shared_ptr<const Interest>& interest, const
 	fwrite ( &(ptmpbuf.p_In_Frame), ptmpbuf.size, 1, pf );
 
 	cout << endl;
+	*/
 }
 
 void Consumer::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
