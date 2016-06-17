@@ -24,17 +24,17 @@ extern "C"
 
 #define BYTE unsigned char
 
-class h264decoder /*: public IH264Decoder*/
+class Decoder /*: public IH264Decoder*/
 {
 public:
-	virtual bool InitH264Deocder(int width, int height);
-	virtual bool H264Decode(unsigned char * inbuf, const int & inlen, unsigned char * outbuf, int & outlen);
-	virtual void StopH264Decoder();
+	virtual bool InitDeocder(int width, int height);
+	virtual bool decode(unsigned char * inbuf, const int & inlen, unsigned char * outbuf, int & outlen);
+	virtual void StopDecoder();
 	virtual void ReleaseConnection();
 
 public:
-	h264decoder(void);
-	virtual ~h264decoder(void);
+	Decoder(void);
+	virtual ~Decoder(void);
 private:
 
 	bool LoadDllFun();

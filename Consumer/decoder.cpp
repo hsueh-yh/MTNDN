@@ -1,7 +1,7 @@
 
-#include "h264decoder.h"
+#include "decoder.h"
 
-h264decoder::h264decoder(void)
+Decoder::Decoder(void)
 	: avcdll(NULL) 
 	, pdec(NULL)
 	, pdecContext(NULL)
@@ -13,11 +13,11 @@ h264decoder::h264decoder(void)
 {
 }
 
-h264decoder::~h264decoder(void)
+Decoder::~Decoder(void)
 {
 }
 
-bool h264decoder::LoadDllFun()
+bool Decoder::LoadDllFun()
 {
 	const char* avcode = "./ffmpeg/lib/libavcodec.so";
 	const char* util = "./ffmpeg/lib/libavutil.so";
@@ -62,7 +62,7 @@ bool h264decoder::LoadDllFun()
 	return true;
 }
 
-bool h264decoder::InitH264Deocder(int width, int height)
+bool Decoder::InitDeocder(int width, int height)
 {
 	if (!LoadDllFun())
 		return false;
@@ -102,7 +102,7 @@ bool h264decoder::InitH264Deocder(int width, int height)
 	return true;
 }
 
-bool h264decoder::InitPostproc(int w, int h)
+bool Decoder::InitPostproc(int w, int h)
 {
 	/*
 	cout << "InitPostproc" << endl;
@@ -124,7 +124,7 @@ bool h264decoder::InitPostproc(int w, int h)
 	return true;
 }
 
-bool h264decoder::H264Decode(unsigned char * inbuf, const int & inlen, unsigned char * outbuf, int & outlen)
+bool Decoder::decode(unsigned char * inbuf, const int & inlen, unsigned char * outbuf, int & outlen)
 {
 	int got_frame;
 	BYTE* showImage[3];
@@ -162,7 +162,7 @@ bool h264decoder::H264Decode(unsigned char * inbuf, const int & inlen, unsigned 
 	return true;
 }
 
-void h264decoder::StopH264Decoder()
+void Decoder::StopDecoder()
 {
 	if (pdecContext != NULL)
 	{
@@ -182,7 +182,7 @@ void h264decoder::StopH264Decoder()
 	ClosePostproc();
 }
 
-void h264decoder::ClosePostproc()
+void Decoder::ClosePostproc()
 {
 	/*
 	if (pp_mode_) {
@@ -200,7 +200,7 @@ void h264decoder::ClosePostproc()
 	*/
 }
 
-void h264decoder::ReleaseConnection()
+void Decoder::ReleaseConnection()
 {
 	delete this;
 }

@@ -1,5 +1,5 @@
 
-#include "h264decoder.h"
+#include "decoder.h"
 #include "libpostproc/postprocess.h"
 
 #define INBUF_SIZE 100 * 1024;
@@ -90,8 +90,8 @@ int main(int argc, char* argv[])
 	unsigned short usHeight = atoi(argv[3]);
 	
 	//create dec&pp
-	h264decoder *pdec = new h264decoder;
-	if (!pdec->InitH264Deocder(usWidth, usHeight))
+	Decoder *pdec = new Decoder;
+	if (!pdec->InitDeocder(usWidth, usHeight))
 	{
 		return false;
 	}
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 
 
 		cout << "Frame: No=" << ++num << " Length=" << nCount << endl;
-		pdec->H264Decode(ptr, nCount, p_Out_Frame, n_Outlen);
+		pdec->decode(ptr, nCount, p_Out_Frame, n_Outlen);
 
 		if (n_Outlen > 0)
 		{
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 	//realse
 	delete[]p_In_Frame;
 	delete[]p_Out_Frame;
-	pdec->StopH264Decoder();
+	pdec->StopDecoder();
 	pdec->ReleaseConnection();
 	fclose(ifp);
 	fclose(ofp);

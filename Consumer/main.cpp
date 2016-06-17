@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <thread>
 
-#include "Consumer.h"
+#include "consumer.h"
 #include "player.h"
 
 
