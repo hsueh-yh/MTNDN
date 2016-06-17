@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "Consumer.h"
+#include "player.h"
 
 
 using namespace std;
@@ -18,6 +19,13 @@ int main(int argc, char** argv)
 
 	std::cout << "init" << endl;
 	consumer->init();
+	Player *player = new Player(consumer->frameBuffer_);
+		std::thread writeFileThread([&]
+			{
+				player->writeFile();
+			});
+	writeFileThread.detach();
+	std::cout << "write thread started" << endl;
 	consumer->start();
 
 /*	try {

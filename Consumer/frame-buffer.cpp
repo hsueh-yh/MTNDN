@@ -16,6 +16,7 @@ FrameBuffer::Slot::Slot( unsigned int frameSize ):
 
 void FrameBuffer::addFrame(const ndn::ptr_lib::shared_ptr<Data>& data)
 {
+	std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
 	Slot *newData = new Slot(data->getContent ().size ());
 	newData->setDataPtr( (unsigned char*)data->getContent().buf() );
 	newData->setSlotPrefix( data->getName() );
@@ -27,6 +28,8 @@ void FrameBuffer::addFrame(const ndn::ptr_lib::shared_ptr<Data>& data)
 
 FrameBuffer::Slot* FrameBuffer::getFrame()
 {
+	std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
+	if ( priorityQueue_.empty() ) return NULL;
 	FrameBuffer::Slot*  tmp = priorityQueue_.top();
 	priorityQueue_.pop();
 	return tmp;

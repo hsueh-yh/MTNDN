@@ -1,4 +1,6 @@
 #include <cstring>
+#include <iostream>
+#include <stdio.h>
 
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/security/key-chain.hpp>

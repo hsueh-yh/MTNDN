@@ -20,20 +20,20 @@ Consumer::Consumer () :
 	faceWrapper_ = NdnRtcUtils::getLibFace()->getFaceWrapper();
 	//pthread_mutex_init ( &recv_buf_mutex, NULL );
 	
-	///*
+	/*
 	pf = fopen ( "consumer.264", "wb+" );
 	if ( pf == NULL )
 	{
 		cout << "open consumer.264 error" << endl;
 		return;
 	}
-	//*/
+	*/
 }
 
 Consumer::~Consumer ()
 {
 	//while ( 0 != pthread_mutex_destroy ( &recv_buf_mutex ));
-	fclose ( pf );
+	//fclose ( pf );
 }
 
 
@@ -52,7 +52,9 @@ void Consumer::start()
 			char tmp[20]="/vide1/01";
 			Name name;
 			cout << "sending interests..." << endl;
-			for (int i = 0; i < 200; i++)
+			int i = 0;
+			//for (int i = 0; i < 200; i++)
+			while(++i < 1000)
 			{
 				//Name name("/video/");
 
@@ -63,26 +65,20 @@ void Consumer::start()
 				time(&rawtime);
 				name.appendTimestamp(rawtime);
 
-				cout << "Express name " << i << " " << name.toUri() << endl;
+				//cout << "Express name " << i << " " << name.toUri() << endl;
 				// Use bind to pass the counter object to the callbacks.
 				faceWrapper_->expressInterest(
 						name,
 						bind(&Pipeliner::onData, pipeliner_.get(), _1, _2),
 						bind(&Pipeliner::onTimeout, pipeliner_.get(), _1));
-
+				usleep(1000);
 			}
 
 
 			//ioservice thread is running
-			//while(1);
-			sleep(5);
-			cout << endl << "start write" << endl<< endl<< endl;
-			for ( int i = 0; i < 200; i++ )
-			{
-				FrameBuffer::Slot *slot = frameBuffer_->getFrame();
-				std::cout << i << " write " << slot->getFrameSize() << std::endl;
-				fwrite ( slot->getDataPtr(), slot->getFrameSize(), 1, pf );
-			}
+			while(1);
+			//sleep(5);
+
 		}
 		catch (std::exception& e) {
 			cout << "exception: " << e.what() << endl;
@@ -129,3 +125,5 @@ void Consumer::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 	++callbackCount_;
 	cout << "Time out for interest " << interest->getName().toUri() << endl;
 }
+
+

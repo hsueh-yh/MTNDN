@@ -19,12 +19,12 @@ Pipeliner::Pipeliner(boost::shared_ptr<FrameBuffer> frameBuffer):
 void Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 		const ptr_lib::shared_ptr<Data>& data)
 {
-	std::cout<<"Pipeliner onData:"<<std::endl;
+	//std::cout<<"Pipeliner onData:"<<std::endl;
 
 	if ( data->getContent ().buf () == NULL )
 			cout << "content is null !" << endl;
-	cout << "Got data "<< data->getName().toUri();
-	cout << " size: " << data->getContent ().size () << endl;
+	//cout << "Got data "<< data->getName().toUri();
+	//cout << " size: " << data->getContent ().size () << endl;
 
 
 	frameBuffer_->addFrame( data );
@@ -49,11 +49,11 @@ void Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 	cout <<"size: " << ptmpbuf.size << endl;
 	fwrite ( &(ptmpbuf.p_In_Frame), ptmpbuf.size, 1, pf );
 	 */
-	cout << endl;
+	//cout << endl;
 }
 
 
 void Pipeliner::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
-	cout << " timeout" << endl;
+	cout << "Pipeliner timeout" << endl;
 }

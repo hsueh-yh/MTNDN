@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 		while ( publisher.stat ) {
 			face.processEvents();
 			// We need to sleep for a few milliseconds so we don't use 100% of the CPU.
-			usleep(10000);
+			usleep(100);
 		}
 	}
 	catch (std::exception& e) {

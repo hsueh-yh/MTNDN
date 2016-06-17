@@ -6,9 +6,9 @@ h264decoder::h264decoder(void)
 	, pdec(NULL)
 	, pdecContext(NULL)
 	, pdecFrame(NULL)
-	, pp_context(NULL)
-	, pp_mode(NULL)
-	, prodll(NULL)
+	//, pp_context_(NULL)
+	//, pp_mode_(NULL)
+	//, prodll(NULL)
 	, utildll(NULL)
 {
 }
@@ -19,7 +19,11 @@ h264decoder::~h264decoder(void)
 
 bool h264decoder::LoadDllFun()
 {
-	avcdll = new Tdll(L"avcodec-57.dll");
+	const char* avcode = "./ffmpeg/lib/libavcodec.so";
+	const char* util = "./ffmpeg/lib/libavutil.so";
+	const char* postpro = "./ffmpeg/lib/libpostproc.so";
+	///*
+	avcdll = new Tdll(avcode);
 	avcdll->loadFunction((void**)&avcodec_register_all, "avcodec_register_all");
 	avcdll->loadFunction((void**)&av_init_packet, "av_init_packet");
 	avcdll->loadFunction((void**)&avcodec_alloc_context3, "avcodec_alloc_context3");
@@ -34,7 +38,7 @@ bool h264decoder::LoadDllFun()
 		return false;
 	}
 
-	utildll = new Tdll(L"avutil-55.dll");
+	utildll = new Tdll(util);
 	utildll->loadFunction((void**)&av_frame_alloc, "av_frame_alloc");
 	utildll->loadFunction((void**)&av_free, "av_free");
 	if (!utildll->ok)
@@ -42,8 +46,8 @@ bool h264decoder::LoadDllFun()
 		cout << "load util dll error" << endl;
 		return false;
 	}
-
-	prodll = new Tdll(L"postproc-54.dll");
+/*
+	prodll = new Tdll(postpro);
 	prodll->loadFunction((void**)&pp_get_context, "pp_get_context");
 	prodll->loadFunction((void**)&pp_free_context, "pp_free_context");
 	prodll->loadFunction((void**)&pp_free_mode, "pp_free_mode");
@@ -54,7 +58,7 @@ bool h264decoder::LoadDllFun()
 		cout << "load prodll error" << endl;
 		return false;
 	}
-
+*/
 	return true;
 }
 
@@ -66,10 +70,11 @@ bool h264decoder::InitH264Deocder(int width, int height)
 	//avcodec_init();
 	cout << "avcodec_register_all..." << endl;
 	avcodec_register_all();
+	cout << "done." << endl;
+	//if (!InitPostproc(width, height))
+	//	return false;
 
-	if (!InitPostproc(width, height))
-		return false;
-
+	cout << "av_init_packet..." << endl;
 	av_init_packet(&avpkt);
 
 	m_width = width;
@@ -99,22 +104,23 @@ bool h264decoder::InitH264Deocder(int width, int height)
 
 bool h264decoder::InitPostproc(int w, int h)
 {
+	/*
 	cout << "InitPostproc" << endl;
 	int i_flags = 0;
 	i_flags = PP_CPU_CAPS_MMX | 
 				PP_CPU_CAPS_MMX2 | 
 				PP_FORMAT_420;
 	
-	pp_context = pp_get_context(w, h, i_flags);
+	pp_context_ = pp_get_context(w, h, i_flags);
 	
-	if (!pp_context)
+	if (!pp_context_)
 		return false;
 	
-	pp_mode = pp_get_mode_by_name_and_quality("default", 6);
+	pp_mode_ = pp_get_mode_by_name_and_quality("default", 6);
 	
-	if (!pp_mode)
+	if (!pp_mode_)
 		return false;
-	
+	*/
 	return true;
 }
 
@@ -139,8 +145,8 @@ bool h264decoder::H264Decode(unsigned char * inbuf, const int & inlen, unsigned 
 		showImage[2] = showImage[1] + m_width*m_height / 4;
 		showLx[0] = m_width; showLx[1] = m_width >> 1; showLx[2] = m_width >> 1;
 		showheight[0] = m_height; showheight[1] = m_height >> 1; showheight[2] = m_height >> 1;
-		pp_postprocess(pdecFrame->data, pdecFrame->linesize, showImage, showLx, m_width, m_height, pdecFrame->qscale_table,
-			pdecFrame->qstride, pp_mode, pp_context, pdecFrame->pict_type);
+		//pp_postprocess(pdecFrame->data, pdecFrame->linesize, showImage, showLx, m_width, m_height, pdecFrame->qscale_table,
+		//	pdecFrame->qstride, pp_mode_, pp_context_, pdecFrame->pict_type);
 		//GetImage(	pdecFrame->data,
 		//			showImage,
 		//			pdecFrame->linesize,
@@ -178,18 +184,20 @@ void h264decoder::StopH264Decoder()
 
 void h264decoder::ClosePostproc()
 {
-	if (pp_mode) {
-		pp_free_mode(pp_mode);
-		pp_mode = 0;
+	/*
+	if (pp_mode_) {
+		pp_free_mode(pp_mode_);
+		pp_mode_ = 0;
 	}
-	if (pp_context) {
-		pp_free_context(pp_context);
-		pp_context = 0;
+	if (pp_context_) {
+		pp_free_context(pp_context_);
+		pp_context_ = 0;
 	}
 	if (prodll) {
 		delete prodll;
 		prodll = 0;
 	}
+	*/
 }
 
 void h264decoder::ReleaseConnection()

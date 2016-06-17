@@ -1,10 +1,10 @@
-all:consumer publisher
+all:publisher consumer
+
+publisher:
+	cd Publisher; $(MAKE)
 	
 consumer:
 	cd Consumer; $(MAKE)
 
-publisher:
-	cd Publisher; $(MAKE)
-
 clean:
-	rm Consumer/consumer Publisher/publisher
+	rm Publisher/publisher Consumer/consumer
