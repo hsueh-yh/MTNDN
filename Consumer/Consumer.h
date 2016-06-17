@@ -47,6 +47,7 @@ public:
 
 	void onTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
 	
+	//static void writeFile();
 
 	int callbackCount_;
 
@@ -54,10 +55,11 @@ public:
 	boost::shared_ptr<FrameBuffer> frameBuffer_;
 	boost::shared_ptr<Pipeliner> pipeliner_;
 
+	//FILE *pf;
 private:
 
-	FILE *pf;
 	
+
 
 
 	//CirQueue<frame_buf> *recv_buf;

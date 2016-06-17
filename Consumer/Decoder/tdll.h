@@ -1,37 +1,44 @@
 #ifndef _TDLL_
 #define _TDLL_
 
-#include <Windows.h>
+//#include <Windows.h>
 #include <iostream>
+extern "C"
+{
+#include <dlfcn.h>
+}
+
 using namespace std;
 
 class Tdll
 {
 private:
-	HMODULE hdll;
+
+	void* handl;
 	void loadDll(const char *dllName);
 public:
 	bool ok;
-	Tdll(const TCHAR *dllName1)
+	Tdll(const char *dllName1)
 	{
-		hdll = LoadLibrary(dllName1);
-		if (!hdll)
+		handl = dlopen( dllName1, RTLD_LAZY );
+
+		if (!handl)
 		{
-			hdll = NULL;
+			handl = NULL;
 		}
-		ok = (hdll != NULL);
+		ok = (handl != NULL);
 	};
 
 	~Tdll()
 	{
-		if (hdll)
-			FreeLibrary(hdll);
+		if (handl)
+			dlclose(handl);
 	}
 
 	void loadFunction(void **fnc, const char *name)
 	{
-		*fnc = GetProcAddress(hdll, name);
-		//cout << *fnc << endl;
+		*fnc = dlsym(handl, name);
+		cout << *fnc << endl;
 		ok &= (*fnc != NULL);
 	}
 };

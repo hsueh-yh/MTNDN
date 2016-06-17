@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 #include "tdll.h"
 
 #include <iostream>
@@ -7,18 +7,18 @@ using namespace std;
 
 extern "C"
 {
-#include "libavcodec\avcodec.h"
-#include "libavformat\avformat.h"
-#include "libavutil\channel_layout.h"
-#include "libavutil\common.h"
-#include "libavutil\imgutils.h"
-#include "libswscale\swscale.h" 
-#include "libavutil\imgutils.h"    
-#include "libavutil\opt.h"       
-#include "libavutil\mathematics.h"    
-#include "libavutil\samplefmt.h" 
-#include "libpostproc\postprocess.h"
-#include "libavutil\pixfmt.h"
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
+#include "libavutil/channel_layout.h"
+#include "libavutil/common.h"
+#include "libavutil/imgutils.h"
+#include "libswscale/swscale.h" 
+#include "libavutil/imgutils.h"
+#include "libavutil/opt.h"
+#include "libavutil/mathematics.h"
+#include "libavutil/samplefmt.h"
+#include "libpostproc/postprocess.h"
+#include "libavutil/pixfmt.h"
 };
 
 
@@ -55,15 +55,17 @@ private:
 
 	bool InitPostproc(int w, int h);
 	void ClosePostproc();
-	pp_context *(*pp_get_context)(int width, int height, int flags);
-	void(*pp_free_context)(pp_context *ppContext);
-	void(*pp_free_mode)(pp_mode *mode);
+	//pp_context *(*pp_get_context)(int width, int height, int flags);
+	//void(*pp_free_context)(pp_context *ppContext);
+	//void(*pp_free_mode)(pp_mode *mode);
 	pp_mode *(*pp_get_mode_by_name_and_quality)(char *name, int quality);
+	/*
 	void(*pp_postprocess)(uint8_t * src[3], int srcStride[3],
 		uint8_t * dst[3], int dstStride[3],
 		int horizontalSize, int verticalSize,
 		QP_STORE_T *QP_store, int QP_stride,
 		pp_mode *mode, pp_context *ppContext, int pict_type);
+		*/
 private:
 	AVCodec			*pdec;
 	AVCodecContext	*pdecContext;
@@ -74,7 +76,7 @@ private:
 
 	Tdll *avcdll;
 	Tdll *utildll;
-	Tdll* prodll;
-	pp_context *pp_context;
-	pp_mode    *pp_mode;
+	//Tdll* prodll;
+	//pp_context *pp_context_;
+	//pp_mode    *pp_mode_;
 };

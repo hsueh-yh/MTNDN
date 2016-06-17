@@ -12,6 +12,9 @@
 #include <queue>
 #include <vector>
 #include <iostream>
+//#include <boost/thread/mutex.hpp>
+#include <thread>
+#include <mutex>
 
 #include <ndn-cpp/name.hpp>
 #include <ndn-cpp/data.hpp>
@@ -87,7 +90,7 @@ private:
 	PriorityQueue;
 
 	PriorityQueue priorityQueue_;
-
+	std::recursive_mutex syncMutex_;
 
 };
 
