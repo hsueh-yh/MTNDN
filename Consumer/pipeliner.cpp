@@ -13,7 +13,19 @@ using namespace std;
 
 Pipeliner::Pipeliner(boost::shared_ptr<FrameBuffer> frameBuffer):
 	frameBuffer_(frameBuffer)
-{}
+{
+	pipelinerFIle_ = fopen ( "pipelinerFIle_.264", "wb+" );
+	if ( pipelinerFIle_ == NULL )
+	{
+		std::cout << "open consumer.yuv error" << std::endl;
+		return;
+	}
+}
+
+Pipeliner::~Pipeliner()
+{
+	fclose(pipelinerFIle_);
+}
 
 
 void Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
@@ -26,8 +38,14 @@ void Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 	//cout << "Got data "<< data->getName().toUri();
 	//cout << " size: " << data->getContent ().size () << endl;
 
-
 	frameBuffer_->addFrame( data );
+
+
+	//fwrite( data->getContent().buf(), data->getContent ().size (),1,pipelinerFIle_);
+//	FrameBuffer::Slot *slot = frameBuffer_->getFrame();
+//	cout << "size:";
+//	cout <<  slot->getFrameSize()<<endl;
+//	fwrite( slot->getDataPtr(), slot->getFrameSize(),1,pipelinerFIle_);
 
 	/*
 	frame_buf tmpbuf;

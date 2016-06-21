@@ -6,9 +6,9 @@ Decoder::Decoder(void)
 	, pdec(NULL)
 	, pdecContext(NULL)
 	, pdecFrame(NULL)
-	//, pp_context_(NULL)
-	//, pp_mode_(NULL)
-	//, prodll(NULL)
+	, pp_context_(NULL)
+	, pp_mode_(NULL)
+	, prodll(NULL)
 	, utildll(NULL)
 {
 }
@@ -46,7 +46,7 @@ bool Decoder::LoadDllFun()
 		cout << "load util dll error" << endl;
 		return false;
 	}
-/*
+///*
 	prodll = new Tdll(postpro);
 	prodll->loadFunction((void**)&pp_get_context, "pp_get_context");
 	prodll->loadFunction((void**)&pp_free_context, "pp_free_context");
@@ -58,11 +58,11 @@ bool Decoder::LoadDllFun()
 		cout << "load prodll error" << endl;
 		return false;
 	}
-*/
+//*/
 	return true;
 }
 
-bool Decoder::InitDeocder(int width, int height)
+bool Decoder::InitDeocder(int width, int height, uint8_t *sps, int spslen, uint8_t *pps, int ppslen )
 {
 	if (!LoadDllFun())
 		return false;
@@ -88,6 +88,12 @@ bool Decoder::InitDeocder(int width, int height)
 	pdecContext = avcodec_alloc_context3(pdec);
 	pdecFrame = av_frame_alloc();
 
+	pdecContext->extradata = new uint8_t[spslen+ppslen];
+	pdecContext->extradata_size = spslen+ppslen;
+
+	memcpy(pdecContext->extradata, sps, spslen);
+	memcpy(pdecContext->extradata+spslen, pps, ppslen);
+
 	pdecContext->width = width;
 	pdecContext->height = height;
 	pdecContext->pix_fmt = AV_PIX_FMT_YUV420P;
@@ -104,7 +110,7 @@ bool Decoder::InitDeocder(int width, int height)
 
 bool Decoder::InitPostproc(int w, int h)
 {
-	/*
+	///*
 	cout << "InitPostproc" << endl;
 	int i_flags = 0;
 	i_flags = PP_CPU_CAPS_MMX | 
@@ -120,11 +126,11 @@ bool Decoder::InitPostproc(int w, int h)
 	
 	if (!pp_mode_)
 		return false;
-	*/
+	//*/
 	return true;
 }
 
-bool Decoder::decode(unsigned char * inbuf, const int & inlen, unsigned char * outbuf, int & outlen)
+bool Decoder::decode( unsigned char * inbuf, const int & inlen, unsigned char * outbuf, int & outlen)
 {
 	int got_frame;
 	BYTE* showImage[3];
@@ -133,11 +139,26 @@ bool Decoder::decode(unsigned char * inbuf, const int & inlen, unsigned char * o
 	int len;
 	avpkt.size = inlen;
 	avpkt.data = inbuf;
-	
+	///cout << "avpkt:" << inlen << " " << strlen((char*)avpkt.data) << endl;
+
+	cout << endl;
+	for( int i = 0; i <20; i++ )
+			printf("%X ",inbuf[i]);
+	std::cout << std::endl << std::endl;
+
+	cout << pdecContext->extradata_size << endl;
+//	cout <<endl<<endl<<endl;
+//	for ( int i = 0; i < pdecContext->extradata_size; i++ )
+//		printf("%X ", pdecContext->extradata[i]);
+//	cout <<endl<<endl<<endl;
+
 	len = avcodec_decode_video2(pdecContext, pdecFrame, &got_frame, &avpkt);
 	if (len < 0)
+	{
+		cout << "decode error ";
 		return false;
-	
+	}
+	cout << "got_frame:" << got_frame << endl;
 	if (got_frame)
 	{
 		showImage[0] = outbuf;
@@ -145,14 +166,21 @@ bool Decoder::decode(unsigned char * inbuf, const int & inlen, unsigned char * o
 		showImage[2] = showImage[1] + m_width*m_height / 4;
 		showLx[0] = m_width; showLx[1] = m_width >> 1; showLx[2] = m_width >> 1;
 		showheight[0] = m_height; showheight[1] = m_height >> 1; showheight[2] = m_height >> 1;
-		//pp_postprocess(pdecFrame->data, pdecFrame->linesize, showImage, showLx, m_width, m_height, pdecFrame->qscale_table,
-		//	pdecFrame->qstride, pp_mode_, pp_context_, pdecFrame->pict_type);
+		cout << "pp_postprocess" <<endl;
+//		pp_postprocess(pdecFrame->data, pdecFrame->linesize, showImage, showLx, m_width, m_height, pdecFrame->qscale_table,
+//			pdecFrame->qstride, pp_mode_, pp_context_, pdecFrame->pict_type);
 		//GetImage(	pdecFrame->data,
 		//			showImage,
 		//			pdecFrame->linesize,
 		//			showLx,
 		//			showheight);
+		cout << "pp_postprocess done" <<endl;
 		outlen = m_width*m_height * 3 / 2;
+
+		//cout << "pdecFrame:" << pdecFrame->linesize << " " << pdecFrame->width << "*" << pdecFrame->height << endl;
+
+		//memcpy(outbuf,pdecFrame->data,outlen);
+		//cout << "done" << endl;
 	}
 	else
 	{
@@ -184,7 +212,7 @@ void Decoder::StopDecoder()
 
 void Decoder::ClosePostproc()
 {
-	/*
+	///*
 	if (pp_mode_) {
 		pp_free_mode(pp_mode_);
 		pp_mode_ = 0;
@@ -197,7 +225,7 @@ void Decoder::ClosePostproc()
 		delete prodll;
 		prodll = 0;
 	}
-	*/
+	//*/
 }
 
 void Decoder::ReleaseConnection()

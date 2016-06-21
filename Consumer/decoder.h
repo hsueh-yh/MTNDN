@@ -27,7 +27,7 @@ extern "C"
 class Decoder /*: public IH264Decoder*/
 {
 public:
-	virtual bool InitDeocder(int width, int height);
+	virtual bool InitDeocder(int width, int height, uint8_t *sps, int spslen, uint8_t *pps, int ppslen );
 	virtual bool decode(unsigned char * inbuf, const int & inlen, unsigned char * outbuf, int & outlen);
 	virtual void StopDecoder();
 	virtual void ReleaseConnection();
@@ -55,20 +55,20 @@ private:
 
 	bool InitPostproc(int w, int h);
 	void ClosePostproc();
-	//pp_context *(*pp_get_context)(int width, int height, int flags);
-	//void(*pp_free_context)(pp_context *ppContext);
-	//void(*pp_free_mode)(pp_mode *mode);
+	pp_context *(*pp_get_context)(int width, int height, int flags);
+	void(*pp_free_context)(pp_context *ppContext);
+	void(*pp_free_mode)(pp_mode *mode);
 	pp_mode *(*pp_get_mode_by_name_and_quality)(char *name, int quality);
-	/*
+	///*
 	void(*pp_postprocess)(uint8_t * src[3], int srcStride[3],
 		uint8_t * dst[3], int dstStride[3],
 		int horizontalSize, int verticalSize,
 		QP_STORE_T *QP_store, int QP_stride,
 		pp_mode *mode, pp_context *ppContext, int pict_type);
-		*/
+		//*/
 private:
 	AVCodec			*pdec;
-	AVCodecContext	*pdecContext;
+AVCodecContext	*pdecContext;
 	AVFrame			*pdecFrame;
 	AVPacket		avpkt;
 	int				m_width;
@@ -76,7 +76,7 @@ private:
 
 	Tdll *avcdll;
 	Tdll *utildll;
-	//Tdll* prodll;
-	//pp_context *pp_context_;
-	//pp_mode    *pp_mode_;
+	Tdll* prodll;
+	pp_context *pp_context_;
+	pp_mode    *pp_mode_;
 };

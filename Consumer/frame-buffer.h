@@ -22,6 +22,12 @@
 using namespace std;
 using namespace ndn;
 
+enum{
+	READY = 0,
+	STARTED,
+	STOPED
+};
+
 class FrameBuffer
 {
 public:
@@ -36,7 +42,7 @@ public:
 
 			bool operator() (const Slot* slot1, const Slot* slot2)
 			{
-				return slot1->slotNumber_ < slot2->slotNumber_;
+				return slot1->slotNumber_ > slot2->slotNumber_;
 			}
 /*
 			bool operator < (Slot* slot1, Slot* slot2)
@@ -46,7 +52,6 @@ public:
 */
 		private:
 			bool inverted_;
-
 		};
 
 		Slot( unsigned int frameSize );
@@ -64,8 +69,14 @@ public:
 		void setSlotPrefix ( ndn::Name prefix )
 		{ slotPrefix_ = prefix; }
 
+		ndn::Name getSlotPrefix()
+		{ return slotPrefix_; }
+
 		void setSlotNumber ( int64_t slotNumber )
 		{ slotNumber_ = slotNumber; }
+
+		int64_t getSlotNumber()
+		{ return slotNumber_; }
 
 	private:
 		unsigned int frameSize_ = 0;
@@ -76,21 +87,37 @@ public:
 		ndn::Name slotPrefix_;
 		int64_t slotNumber_;
 
+
 	};
 
-	FrameBuffer(){}
+	FrameBuffer():
+		count_(0)
+		//status_(STOPED)
+	{}
 	~FrameBuffer(){}
+
+	void init()
+	{
+		//status_ = STARTED;
+	}
 
 	void addFrame(const ndn::ptr_lib::shared_ptr<Data>& data);
 	Slot* getFrame();
+
+	//bool status_;
 
 private:
 	typedef
 	priority_queue< Slot*, vector<Slot*>, Slot::Comparator/*greater<Slot::Comparator>*/ >
 	PriorityQueue;
+//	queue< Slot*>
+//		PriorityQueue;
+
+	int count_;
 
 	PriorityQueue priorityQueue_;
 	std::recursive_mutex syncMutex_;
+
 
 };
 
