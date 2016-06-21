@@ -19,7 +19,7 @@ class Pipeliner
 {
 public:
 	Pipeliner(boost::shared_ptr<FrameBuffer> frameBuffer);
-	~Pipeliner(){}
+	~Pipeliner();
 
 	void onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data);
 
@@ -36,7 +36,7 @@ public:
 
 private:
 	boost::shared_ptr<FrameBuffer> frameBuffer_;
-
+	FILE *pipelinerFIle_;
 };
 
 

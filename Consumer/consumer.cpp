@@ -41,6 +41,7 @@ void Consumer::init()
 {
 	std::cout << "init consumer " << endl;
 	frameBuffer_.reset(new FrameBuffer());
+	//frameBuffer_->init();
 	pipeliner_.reset(new Pipeliner(frameBuffer_));
 }
 
@@ -54,7 +55,7 @@ void Consumer::start()
 			cout << "sending interests..." << endl;
 			int i = 0;
 			//for (int i = 0; i < 200; i++)
-			while(++i < 1000)
+			while(++i <= 202)
 			{
 				//Name name("/video/");
 

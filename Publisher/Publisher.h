@@ -25,12 +25,16 @@ public:
 		ifp = fopen ( "out.264", "rb" );
 		if ( ifp == NULL )
 			cout << "Open file error!" << endl;
+		outfp = fopen ( "copyout.264", "wb" );
+			if ( ifp == NULL )
+				cout << "Open file error!" << endl;
 	}
 
 
 	~Publisher ()
 	{
 		fclose ( ifp );
+		fclose ( outfp );
 	}
 
 	// onInterest.
@@ -55,6 +59,7 @@ public:
 	int stat;
 
 	FILE* ifp;
+	FILE* outfp;
 	int count;
 
 

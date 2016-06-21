@@ -12,7 +12,7 @@ void Publisher::operator()
 {
 	++responseCount_;
 	++count;
-	cout << "Got an interest..." << endl;
+	//cout << "Got an interest..." << endl;
 
 	// Make and sign a Data packet.
 	Data data(interest->getName());
@@ -23,6 +23,7 @@ void Publisher::operator()
 	
 	uint8_t *p_In_Frame = new uint8_t[WIDTH * HEIGHT * 3 / 2];
 	
+
 	int nalLenth;
 	
 	if ( ifp == NULL )
@@ -34,6 +35,7 @@ void Publisher::operator()
 	{
 		cout << "Read again" << endl;
 		fseek ( ifp, 0, SEEK_SET );
+		count = 0;
 	}
 	
 	while ( !feof(ifp) )
@@ -47,15 +49,21 @@ void Publisher::operator()
 	
 	const Blob content ( p_In_Frame, nalLenth );
 
-	cout << "Got data ...  " << endl;
+	//cout << "Got data ...  " << endl;
 
 	data.setContent( content );
 	
 	keyChain_.sign(data, certificateName_);
 
-	cout << "Sent content " << count;
-	cout << " size:" << content.size () << endl;
+	//cout << "Sent content " << ++count;
+	//cout << " size:" << content.size () << endl;
 	face.putData(data);
+
+	cout << "Write " << ++responseCount_ << " " << data.getContent().size() << endl;
+	for( int i = 0; i <20; i++ )
+		printf("%X ",data.getContent().buf()[i]);
+	cout << endl<< endl;
+	fwrite(data.getContent().buf(), data.getContent().size(),1,outfp);
 }
 
 

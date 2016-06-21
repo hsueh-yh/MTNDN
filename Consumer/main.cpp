@@ -20,10 +20,15 @@ int main(int argc, char** argv)
 	std::cout << "init" << endl;
 	consumer->init();
 	Player *player = new Player(consumer->frameBuffer_);
-		std::thread writeFileThread([&]
-			{
-				player->writeFile();
-			});
+//	if(player->init())
+//		cout << "Player init" << endl;
+//	else
+//		cout << "Player init failed" << endl;
+
+	std::thread writeFileThread([&]
+		{
+			player->writeFile();
+		});
 	writeFileThread.detach();
 	std::cout << "write thread started" << endl;
 	consumer->start();
