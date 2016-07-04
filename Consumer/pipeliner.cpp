@@ -33,10 +33,13 @@ void Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 {
 	//std::cout<<"Pipeliner onData:"<<std::endl;
 
+	string framenoStr = data->getName().get(1).toEscapedString();
+	long frameNo = std::atoi(framenoStr.c_str());
+
 	if ( data->getContent ().buf () == NULL )
 			cout << "content is null !" << endl;
-	//cout << "Got data "<< data->getName().toUri();
-	//cout << " size: " << data->getContent ().size () << endl;
+	cout << "Got frame "<< frameNo//data->getName().toUri()
+		 << " size: " << data->getContent ().size () << endl;
 
 	frameBuffer_->addFrame( data );
 

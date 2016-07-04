@@ -1,9 +1,15 @@
+#ifndef _FRAME_BUFFER_H_
+#define _FRAME_BUFFER_H_
+
 #include <cstring>
 #include <iostream>
 #include <stdio.h>
+#include <map>
 
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
+
+#include "frame-data.h"
 
 
 #define WIDTH 640
@@ -16,26 +22,12 @@ using namespace std;
 
 class Publisher {
 public:
-	Publisher ( KeyChain &keyChain, const Name& certificateName ) :
-		keyChain_ ( keyChain ),
-		certificateName_ ( certificateName ),
-		responseCount_ ( 0 ),
-		count ( 0 )
-	{
-		ifp = fopen ( "out.264", "rb" );
-		if ( ifp == NULL )
-			cout << "Open file error!" << endl;
-		outfp = fopen ( "copyout.264", "wb" );
-			if ( ifp == NULL )
-				cout << "Open file error!" << endl;
-	}
 
+	Publisher ( KeyChain &keyChain, const Name& certificateName );
 
-	~Publisher ()
-	{
-		fclose ( ifp );
-		fclose ( outfp );
-	}
+	~Publisher ();
+
+	bool init ();
 
 	// onInterest.
 	void operator()
@@ -51,6 +43,7 @@ public:
 	int start();
 	int stop();
 
+
 	KeyChain keyChain_;
 	//Name myPrefix;
 	Name certificateName_;
@@ -61,6 +54,15 @@ public:
 	FILE* ifp;
 	FILE* outfp;
 	int count;
+
+	unsigned char *spsBuf_, *ppsBuf_;
+	long frameStart_;
+
+	map<int,FrameData*> mapRep_;
+	unsigned char* repertory_;
+	long frameCount_;
+
+	unsigned char* tmpbuf_;
 
 
 public:
@@ -133,3 +135,5 @@ public:
 
 
 };
+
+#endif	//_FRAME_BUFFER_H_
