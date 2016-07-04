@@ -9,19 +9,21 @@
 !*.cpp
 
 
-!/Consumer/
-!/Consumer/Makefile
-!/Consumer/*.h
-!/Consumer/*.cpp
-!/Consumer/util/
-!/Consumer/Decoder/
-!/Consumer/Decoder/*.h
-!/Consumer/Decoder/*.cpp
+!/consumer/
+!/consumer/Makefile
+!/consumer/*.h
+!/consumer/*.c
+!/consumer/*.cpp
+!/consumer/*.ui
+!/consumer/util/
+!/consumer/Decoder/
+!/consumer/Decoder/*.h
+!/consumer/Decoder/*.cpp
 
 
-!/Publisher/
-!/Publisher/Makefile
-!/Publisher/*.h
-!/Publisher/*.cpp
-!/Publisher/util/
-/Publisher/out.264
+!/publisher/
+!/publisher/Makefile
+!/publisher/*.h
+!/publisher/*.cpp
+!/publisher/util/
+/publisher/out.264
