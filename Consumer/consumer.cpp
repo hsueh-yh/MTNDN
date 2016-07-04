@@ -50,35 +50,42 @@ void Consumer::start()
 {
 	std::cout << "start consumer " << endl;
 	try {
-			char tmp[20]="/vide1/01";
+		int begin = -1 , end = 202;
+			char tmp[20];//="/vide1/01";
 			Name name;
 			cout << "sending interests..." << endl;
-			int i = 0;
-			//for (int i = 0; i < 200; i++)
-			while(++i <= 202)
+			while(1)
 			{
-				//Name name("/video/");
 
-				tmp[8]=i+'0';
+				int i = begin;
+				//for (int i = 0; i < 200; i++)
+				while(++i < end)
+				{
+					//Name name("/video/");
 
-				name.set(tmp);
-				time_t rawtime;
-				time(&rawtime);
-				name.appendTimestamp(rawtime);
+					sprintf(tmp, "/vide1/%d", i);
 
-				//cout << "Express name " << i << " " << name.toUri() << endl;
-				// Use bind to pass the counter object to the callbacks.
-				faceWrapper_->expressInterest(
-						name,
-						bind(&Pipeliner::onData, pipeliner_.get(), _1, _2),
-						bind(&Pipeliner::onTimeout, pipeliner_.get(), _1));
-				usleep(1000);
-			}
+					//tmp[8]=i+'0';
 
+					name.set(tmp);
+					time_t rawtime;
+					time(&rawtime);
+					name.appendTimestamp(rawtime);
+
+					cout << "Express name " << i << " " << name.toUri() << endl;
+					// Use bind to pass the counter object to the callbacks.
+					faceWrapper_->expressInterest(
+							name,
+							bind(&Pipeliner::onData, pipeliner_.get(), _1, _2),
+							bind(&Pipeliner::onTimeout, pipeliner_.get(), _1));
+					usleep(1000);
+				}
 
 			//ioservice thread is running
-			while(1);
+			//while(1);
 			//sleep(5);
+				cin >> begin >> end;
+			}
 
 		}
 		catch (std::exception& e) {

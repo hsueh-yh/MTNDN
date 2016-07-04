@@ -3,7 +3,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "Publisher.h"
+#include "publisher.h"
 
 using namespace std;
 
@@ -20,7 +20,13 @@ int main(int argc, char** argv)
 
 		// Also use the default certificate name to sign data packets.
 		Publisher publisher(keyChain, keyChain.getDefaultCertificateName());
-		Name prefix("/vide1");
+		if( !publisher.init() )
+		{
+			cout << "Publisher init fail" << endl;
+			return 0;
+		}
+
+		Name prefix("/video");
 		cout << "Register prefix  " << prefix.toUri() << endl;
 		// TODO: After we remove the registerPrefix with the deprecated OnInterest,
 		// we can remove the explicit cast to OnInterestCallback (needed for boost).
