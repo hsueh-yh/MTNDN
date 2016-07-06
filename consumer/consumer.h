@@ -1,6 +1,3 @@
-#ifndef CONSUMER_H_
-#define CONSUMER_H_
-
 #include <pthread.h>
 #include <ndn-cpp/face.hpp>
 #include <boost/shared_ptr.hpp>
@@ -17,7 +14,6 @@
 #include "face-wrapper.h"
 #include "frame-buffer.h"
 #include "pipeliner.h"
-#include "player.h"
 
 using namespace std;
 using namespace ndn;
@@ -28,18 +24,17 @@ using namespace ndn::func_lib;
 #define HEIGHT 480
 
 
+struct frame_buf
+{
+	size_t size;
+	uint8_t p_In_Frame[WIDTH * HEIGHT * 3 / 2];
+};
+
+
 class Consumer
 {
 public:
-
-    typedef enum{
-        STOPED = -1,
-        READY = 0,
-        STARTED = 1,
-
-    }Status;
-
-    Consumer (string uri, boost::shared_ptr<FaceWrapper> faceWrapper);
+	Consumer ();
 
 	~Consumer ();
 
@@ -47,21 +42,27 @@ public:
 
 	void start();
 
-    void stop();
+	void onData(const ptr_lib::shared_ptr<const Interest>& interest,
+				const ptr_lib::shared_ptr<Data>& data);
+
+	void onTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
+	
+	//static void writeFile();
+
+	int callbackCount_;
 
 	boost::shared_ptr<FaceWrapper> faceWrapper_;
 	boost::shared_ptr<FrameBuffer> frameBuffer_;
 	boost::shared_ptr<Pipeliner> pipeliner_;
-    boost::shared_ptr<Player> player_;
 
+	//FILE *pf;
 private:
 
-    //Name *name;
-    std::string prefix_;
-    int callbackCount_;
+	
 
-    Status status_;
 
+
+	//CirQueue<frame_buf> *recv_buf;
+	//pthread_mutex_t recv_buf_mutex;
 };
 
-#endif //CONSUMER_H_

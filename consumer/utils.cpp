@@ -22,7 +22,6 @@ using namespace std;
 
 using namespace boost::chrono;
 
-
 /*
 typedef struct _FrequencyMeter {
     double cycleDuration_;
@@ -76,6 +75,7 @@ typedef struct _SlidingAverage {
 */
 
 //********************************************************************************
+#pragma mark - all static
 
 static boost::asio::io_service* NdnRtcIoService;
 static boost::shared_ptr<FaceProcessor> LibraryFace;
@@ -191,18 +191,18 @@ void NdnRtcUtils::performOnBackgroundThread(boost::function<void(void)> dispatch
     }
 }
 
-void NdnRtcUtils::createLibFace(const std::string host, const int port/*const new_api::GeneralParams& generalParams*/)
+void NdnRtcUtils::createLibFace(/*const new_api::GeneralParams& generalParams*/)
 {
-    //std::cout<<"creating libFace..." << std::endl;
+	std::cout<<"creating libFace..." << std::endl;
     if (!LibraryFace.get() ||
         (LibraryFace.get() && LibraryFace->getTransport()->getIsConnected() == false))
     {
         //LogInfo(LIB_LOG) << "Creating library Face..." << std::endl;
 
-        LibraryFace = FaceProcessor::createFaceProcessor(host,port,DefaultKeyChain);
+        LibraryFace = FaceProcessor::createFaceProcessor("localhost",6363,DefaultKeyChain);
         		//(generalParams.host_, generalParams.portNum_, NdnRtcNamespace::defaultKeyChain());
 
-        //std::cout<<"starting libFace..." << std::endl;
+        std::cout<<"starting libFace..." << std::endl;
         LibraryFace->startProcessing(10);
         
         //LogInfo(LIB_LOG) << "Library Face created" << std::endl;
@@ -224,26 +224,6 @@ void NdnRtcUtils::destroyLibFace()
         //LogInfo(LIB_LOG) << "Library face stopped" << std::endl;
     }
 }
-
-//******************************************************************************
-
-Name::Component NdnRtcUtils::componentFromInt(unsigned int number)
-{
-    stringstream ss;
-
-    ss << number;
-    std::string frameNoStr = ss.str();
-
-    return Name::Component((const unsigned char*)frameNoStr.c_str(),
-                           frameNoStr.size());
-}
-
-// monotonic clock
-int64_t NdnRtcUtils::microsecondTimestamp()
-{
-    microseconds usec = duration_cast<microseconds>(steady_clock::now().time_since_epoch());
-    return usec.count();
-};
 
 //******************************************************************************
 /*

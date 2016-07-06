@@ -12,13 +12,17 @@
 !/consumer/
 !/consumer/Makefile
 !/consumer/*.h
+!/consumer/*.hpp
 !/consumer/*.c
 !/consumer/*.cpp
 !/consumer/*.ui
 !/consumer/util/
-!/consumer/Decoder/
-!/consumer/Decoder/*.h
-!/consumer/Decoder/*.cpp
+!/consumer/ffmpeg/
+!/consumer/ffmpeg/include/
+!/consumer/ffmpeg/include/libavcodec/
+!/consumer/ffmpeg/include/libavutil/
+!/consumer/ffmpeg/include/libpostproc/
+!/consumer/ffmpeg/include/libswscale/
 
 
 !/publisher/
@@ -27,3 +31,4 @@
 !/publisher/*.cpp
 !/publisher/util/
 /publisher/out.264
+/publisher/out.mp4

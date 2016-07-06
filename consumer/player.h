@@ -6,8 +6,8 @@
  */
 
 
-#ifndef __PLAYER_H_
-#define __PLAYER_H_
+#ifndef PLAYER_H_
+#define PLAYER_H_
 
 #include <iostream>
 #include <boost/shared_ptr.hpp>
@@ -16,33 +16,21 @@
 #include "frame-buffer.h"
 
 
-
 class Player
 {
 public:
-    Player();
+	Player(boost::shared_ptr<FrameBuffer> frameBuffer);
 
 	~Player();
 
-    bool init (boost::shared_ptr<FrameBuffer> frameBuffer);
+	bool init ();
 
 	void writeFile ();
 
-    bool refresh();
-
-    unsigned char* imageProcess(const void* p,unsigned char* dst);
-
-    unsigned char* bmp_frameBuf_;
-
-
 private:
-    boost::shared_ptr<FrameBuffer> frameBuffer_;
-
+	boost::shared_ptr<FrameBuffer> frameBuffer_;
 	FILE *pFile_, *pFile1_;
 	Decoder *decoder_;
-
-    unsigned char * yuv_frameBuf_/**, bmp_frameBuf_*/;
-
 };
 
 

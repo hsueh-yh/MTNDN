@@ -1,0 +1,1 @@
+./configure --enable-nonfree --enable-gpl --enable-decoder=h264 --enable-decoder=aac --enable-decoder=h264_vdpau --prefix=/home/Download/ffmpeg-3.0.2/_bin --enable-parser=aac --enable-parser=h264 --enable-protocol=rstp --enable-demuxer=h264 --enable-demuxer=aac --enable-protocol=file --enable-outdevs --disable-yasm

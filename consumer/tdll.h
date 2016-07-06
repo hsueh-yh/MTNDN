@@ -38,7 +38,7 @@ public:
 	void loadFunction(void **fnc, const char *name)
 	{
 		*fnc = dlsym(handl, name);
-        //cout << *fnc << endl;
+		//cout << *fnc << endl;
 		ok &= (*fnc != NULL);
 	}
 };

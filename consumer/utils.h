@@ -22,7 +22,6 @@
 using namespace boost;
 using namespace ndn;
 
-
 class FaceProcessor;
 
 class NdnRtcUtils {
@@ -51,12 +50,12 @@ public:
 	static void performOnBackgroundThread(boost::function<void(void)> dispatchBlock,
 										   boost::function<void(void)> onCompletion = boost::function<void(void)>());
 
-    static void createLibFace(const std::string host, const int port/*const new_api::GeneralParams& params*/);
+	static void createLibFace(/*const new_api::GeneralParams& params*/);
 	static boost::shared_ptr<FaceProcessor> getLibFace();
 	static void destroyLibFace();
 
 
-    ///*
+	/*
 	static unsigned int setupFrequencyMeter(unsigned int granularity = 1);
 	static void frequencyMeterTick(unsigned int meterId);
 	static double currentFrequencyMeterValue(unsigned int meterId);
@@ -98,7 +97,7 @@ public:
 
 	static int intFromComponent(const Name::Component &comp);
 	static Name::Component componentFromInt(unsigned int number);
-/*
+
 	static std::string stringFromFrameType(const WebRtcVideoFrameType &frameType);
 
 	static unsigned int toFrames(unsigned int intervalMs,
@@ -113,7 +112,7 @@ public:
 	static std::string getFullLogPath(const new_api::GeneralParams& generalParams,
 									  const std::string& fileName);
 	static std::string toString(const char *format, ...);
-//*/
+*/
 
 };
 
