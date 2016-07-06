@@ -16,18 +16,6 @@
 !/consumer/*.cpp
 !/consumer/*.ui
 !/consumer/util/
-!/consumer/ffmpeg/include/
-!/consumer/ffmpeg/include/libavcodec/
-!/consumer/ffmpeg/include/libavdevice/
-!/consumer/ffmpeg/include/libavfilter/
-!/consumer/ffmpeg/include/libavformat/
-!/consumer/ffmpeg/include/libavutil/
-!/consumer/ffmpeg/include/libpostproc/
-!/consumer/ffmpeg/include/libswresample/
-!/consumer/ffmpeg/include/libswscale/
-!/consumer/ffmpeg/lib/libavcodec.so/
-!/consumer/ffmpeg/lib/libavutil.so/
-!/consumer/ffmpeg/lib/libpostproc.so/
 
 
 !/publisher/
@@ -35,5 +23,6 @@
 !/publisher/*.h
 !/publisher/*.cpp
 !/publisher/util/
+
 /publisher/out.264
 /publisher/out.mp4
