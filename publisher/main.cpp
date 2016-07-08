@@ -5,6 +5,9 @@
 
 #include "publisher.h"
 
+#define HOST_DEFAULT "localhost"
+#define PORT_DEFAULT 6363
+
 using namespace std;
 
 
@@ -12,7 +15,7 @@ int main(int argc, char** argv)
 {
 	try {
 		// The default Face will connect using a Unix socket, or to "localhost".
-		Face face;
+		Face face(HOST_DEFAULT,PORT_DEFAULT);
 
 		// Use the system default key chain and certificate name to sign commands.
 		KeyChain keyChain;
