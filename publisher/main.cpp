@@ -5,7 +5,8 @@
 
 #include "publisher.h"
 
-#define HOST_DEFAULT "localhost"
+#define HOST_DEFAULT "10.103.240.100"
+//#define HOST_DEFAULT "localhost"
 #define PORT_DEFAULT 6363
 
 
