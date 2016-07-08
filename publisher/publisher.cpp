@@ -5,7 +5,7 @@
 
 
 Publisher::Publisher ( KeyChain &keyChain, const Name& certificateName ) :
-		//keyChain_ ( keyChain ),
+		keyChain_ ( keyChain ),
 		certificateName_ ( certificateName ),
 		responseCount_ ( 0 ),
 		count ( 0 ),
@@ -14,22 +14,17 @@ Publisher::Publisher ( KeyChain &keyChain, const Name& certificateName ) :
 		frameStart_(0),
 		frameCount_(0),
 		tmpbuf_(new uint8_t[WIDTH * HEIGHT * 3 / 2])
-{}
+{
+	ifp = fopen ( "out.264", "rb" );
+	if ( ifp == NULL )
+		cout << "Open file error!" << endl;
 
 
-Publisher::Publisher ( boost::shared_ptr<FaceWrapper> faceWrapper, Name prefix ):
-		faceWrapper_(faceWrapper),
-		basePrefix_(prefix),
-		keyChain_ ( NdnRtcUtils::getKeyChain()  ),
-		certificateName_ ( keyChain_->getDefaultCertificateName() ),
-		responseCount_ ( 0 ),
-		count ( 0 ),
-		spsBuf_(NULL),
-		ppsBuf_(NULL),
-		frameStart_(0),
-		frameCount_(0),
-		tmpbuf_(new uint8_t[WIDTH * HEIGHT * 3 / 2])
-{}
+/*	outfp = fopen ( "copyout.264", "wb" );
+	if ( ifp == NULL )
+		cout << "Open file error!" << endl;
+*/
+}
 
 
 Publisher::~Publisher ()
@@ -42,13 +37,6 @@ Publisher::~Publisher ()
 bool
 Publisher::init()
 {
-	ifp = fopen ( "out.264", "rb" );
-		if ( ifp == NULL )
-		{
-			cout << "Open file error!" << endl;
-			return false;
-		}
-
 	long fileLen;
 	fseek(ifp, 0, SEEK_END);
 	fileLen = ftell(ifp);
@@ -83,9 +71,6 @@ Publisher::init()
 	cout << "Init mapRep: " << mapRep_.size()
 		 << " frameCount: " << frameCount_
 		 << " repertory: 0 - " << ptmp - repertory_ << endl;
-
-	cout << "Register prefix  " << basePrefix_.toUri() << endl;
-	registerPrefix(basePrefix_);
 
 	if (feof(ifp))
 		return true;
@@ -135,94 +120,6 @@ Publisher::init()
 }
 
 
-void
-Publisher::registerPrefix(const Name& prefix)
-{
-	faceWrapper_->getFace()->registerPrefix(
-			prefix,
-			(const OnInterestCallback)bind(&Publisher::onInterest, this,_1,_2,_3,_4,_5),
-			(const OnRegisterFailed)bind(&Publisher::onRegisterFailed, this, _1) );
-}
-
-// onInterest.
-void Publisher::onInterest
-						(	const ptr_lib::shared_ptr<const Name>& prefix,
-							const ptr_lib::shared_ptr<const Interest>& interest,
-							Face& face,
-							uint64_t interestFilterId,
-							const ptr_lib::shared_ptr<const InterestFilter>& filter )
-{
-	++responseCount_;
-	++count;
-	//cout << "Got an interest..." << endl;
-
-
-	Name requestName(interest->getName());
-	string framenoStr = requestName.get(1).toEscapedString();
-	long requestNo = std::atoi(framenoStr.c_str());
-	long responseNo = requestNo % frameCount_;
-
-	cout << "Request : " << requestNo
-			<< " by " << requestName.toUri() << endl;
-
-
-	FrameData *pframe;
-	map<int, FrameData*>::iterator iter;
-	iter = mapRep_.find(responseNo);
-
-
-	if( iter != mapRep_.end())
-	{
-		pframe = iter->second;
-	}
-	else
-	{
-		cout << "Deny" << endl;
-		return;
-	}
-
-	size_t tmpLen = sizeof(FrameDataHeader) + pframe->header_.length_;
-	//unsigned char* tmp = (unsigned char* ) malloc (tmpLen);
-
-	memcpy(tmpbuf_, pframe, sizeof(FrameDataHeader));	//copy frame header
-	memcpy(tmpbuf_ + sizeof(FrameDataHeader), pframe->buf_, pframe->header_.length_ );	//copy frame data
-
-
-	const Blob content ( tmpbuf_, tmpLen );
-
-	// Make and sign a Data packet.
-	Data data(requestName);
-
-	data.setContent( content );
-
-	keyChain_->sign(data, certificateName_);
-
-	cout << "Response: " << requestNo
-		 << " size:"
-		 << sizeof(FrameDataHeader) << "+"<<pframe->header_.length_ << "="
-		 << content.size () << endl;
-
-	//face.putData(data);
-	faceWrapper_->getFace()->putData(data);
-
-	for( int i = 0; i <30; i++ )
-		printf("%2X ",data.getContent().buf()[i]);
-	cout << endl << endl;
-	//fwrite(data.getContent().buf(), data.getContent().size(),1,outfp);
-}
-
-
-// onRegisterFailed.
-void Publisher::onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix)
-{
-	++responseCount_;
-	cout << "Register failed for prefix " << prefix->toUri() << endl;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-////
-//////////////////////////////////////////////////////////////////////////////
-
 // onInterest.
 void Publisher::operator()
 						(	const ptr_lib::shared_ptr<const Name>& prefix,
@@ -242,7 +139,7 @@ void Publisher::operator()
 	long responseNo = requestNo % frameCount_;
 
 	cout << "Request : " << requestNo
-			<< " by " << requestName.toUri() << endl;
+			<< " by " << requestName.to_uri() << endl;
 	
 	
 	FrameData *pframe;
@@ -274,15 +171,14 @@ void Publisher::operator()
 
 	data.setContent( content );
 	
-	keyChain_->sign(data, certificateName_);
+	keyChain_.sign(data, certificateName_);
 
 	cout << "Response: " << requestNo
 		 << " size:"
 		 << sizeof(FrameDataHeader) << "+"<<pframe->header_.length_ << "="
 		 << content.size () << endl;
 
-	//face.putData(data);
-	faceWrapper_->getFace()->putData(data);
+	face.putData(data);
 
 	for( int i = 0; i <30; i++ )
 		printf("%2X ",data.getContent().buf()[i]);
@@ -303,10 +199,6 @@ int Publisher::start()
 {
 	stat = 1;
 
-	while(1)
-	{
-		usleep(30*1000);
-	}
 }
 
 
