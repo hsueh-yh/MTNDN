@@ -10,7 +10,6 @@
 #include <ndn-cpp/security/key-chain.hpp>
 
 #include "frame-data.h"
-#include "face-wrapper.h"
 
 
 #define WIDTH 640
@@ -25,25 +24,10 @@ class Publisher {
 public:
 
 	Publisher ( KeyChain &keyChain, const Name& certificateName );
-	Publisher ( boost::shared_ptr<FaceWrapper> faceWrapper, Name prefix  );
 
 	~Publisher ();
 
 	bool init ();
-
-
-	void registerPrefix(const Name& prefix);
-
-	// onInterest.
-	void onInterest
-					(const ptr_lib::shared_ptr<const Name>& prefix,
-					const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
-					uint64_t interestFilterId,
-					const ptr_lib::shared_ptr<const InterestFilter>& filter);
-
-	// onRegisterFailed.
-	void onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix);
-
 
 	// onInterest.
 	void operator()
@@ -59,15 +43,16 @@ public:
 	int start();
 	int stop();
 
-	boost::shared_ptr<FaceWrapper> faceWrapper_;
-	boost::shared_ptr<KeyChain> keyChain_;
-	Name basePrefix_;
+
+	KeyChain keyChain_;
+	//Name myPrefix;
 	Name certificateName_;
 	int responseCount_;
 
 	int stat;
 
 	FILE* ifp;
+	FILE* outfp;
 	int count;
 
 	unsigned char *spsBuf_, *ppsBuf_;
