@@ -5,7 +5,9 @@
 
 #include "publisher.h"
 
-#define HOST_DEFAULT "localhost"
+
+//#define HOST_DEFAULT "localhost"
+#define HOST_DEFAULT "10.103.240.100"
 #define PORT_DEFAULT 6363
 
 using namespace std;
@@ -15,7 +17,8 @@ int main(int argc, char** argv)
 {
 	try {
 		// The default Face will connect using a Unix socket, or to "localhost".
-		Face face(HOST_DEFAULT,PORT_DEFAULT);
+		//Face face(HOST_DEFAULT,PORT_DEFAULT);
+		Face face;
 
 		// Use the system default key chain and certificate name to sign commands.
 		KeyChain keyChain;
@@ -33,6 +36,7 @@ int main(int argc, char** argv)
 		cout << "Register prefix  " << prefix.toUri() << endl;
 		// TODO: After we remove the registerPrefix with the deprecated OnInterest,
 		// we can remove the explicit cast to OnInterestCallback (needed for boost).
+		cout << face.isLocal() << endl;
 		face.registerPrefix(prefix, (const OnInterestCallback&)func_lib::ref(publisher), func_lib::ref(publisher));
 		
 
