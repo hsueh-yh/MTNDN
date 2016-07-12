@@ -12,8 +12,10 @@
 #include "frame-data.h"
 
 
-#define WIDTH 640
-#define HEIGHT 480
+// #define WIDTH 640
+// #define HEIGHT 480
+#define WIDTH 1080
+#define HEIGHT 720
 
 
 using namespace ndn;
@@ -28,6 +30,8 @@ public:
 	~Publisher ();
 
 	bool init ();
+
+	void view();
 
 	// onInterest.
 	void operator()

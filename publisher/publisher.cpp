@@ -56,8 +56,8 @@ Publisher::init()
 			FrameData *frame = (FrameData*) malloc (sizeof(FrameData));
 			frame->header_.length_ = nalLength;
 			frame->header_.completeFrame_ = true;
-			frame->header_.encodedHeight_ = 480;
-			frame->header_.encodedWidth_ = 640;
+			frame->header_.encodedHeight_ = HEIGHT;
+			frame->header_.encodedWidth_ = WIDTH;
 			frame->header_.frameType_ = IFrame;
 			frame->header_.frameNumber = frameCount_;
 			frame->buf_ = ptmp;
@@ -69,54 +69,44 @@ Publisher::init()
 	}
 
 	cout << "Init mapRep: " << mapRep_.size()
-		 << " frameCount: " << frameCount_
-		 << " repertory: 0 - " << ptmp - repertory_ << endl;
+		 << " FrameCount: " << frameCount_
+		 << " Repertory: 0 - " << ptmp - repertory_ << endl;
+
+	//view();
 
 	if (feof(ifp))
 		return true;
 	else
 		return false;
+}
 
-	/*
-	int nalLenth = 0,spsOk = 0, ppsOk = 0;
+void Publisher::view()
+{
+	FrameData *pframe;
 
-	spsBuf_ = new unsigned char[20];
-	ppsBuf_ = new unsigned char[20];
-
-	//get sps
-	while ( !feof(ifp) )
+	for ( int i = 0; i < frameCount_; i++ )
 	{
-		nalLenth = getNextNal ( ifp, spsBuf_ );
-		if ( nalLenth == 0 )
-			continue;
+		map<int, FrameData*>::iterator iter;
+		iter = mapRep_.find(i);
+		if( iter != mapRep_.end())
+		{
+			pframe = iter->second;
+		}
 		else
 		{
-			spsOk = 1;
-			break;
+			cout << "Deny" << endl;
+			return;
 		}
-	}
 
-	//get pps
-	while ( !feof(ifp) )
-	{
-		nalLenth = getNextNal ( ifp, ppsBuf_ );
-		if ( nalLenth == 0 )
-			continue;
-		else
-		{
-			ppsOk = 1;
-			break;
-		}
-	}
+		cout << i << " "
+			 << sizeof(FrameDataHeader) << "+"
+			 <<pframe->header_.length_<<endl;
 
-	if(spsOk && ppsOk)
-	{
-		frameStart_ = ftell(ifp);
-		return true;
+		//printf("%d %d\n",i, pframe->header_.length_);
+		for( int i = 0; i <40; i++ )
+			printf("%2X ",pframe->buf_[i]);
+		cout << endl << endl;
 	}
-
-	return false;
-	*/
 }
 
 
@@ -188,7 +178,7 @@ void Publisher::operator()
 
 
 // onRegisterFailed.
-void Publisher::operator()(const ptr_lib::shared_ptr<const Name>& prefix)
+void Publisher::operator()(const ptr_lib::shared_ptr<const Name>& prefix )
 {
 	++responseCount_;
 	cout << "Register failed for prefix " << prefix->toUri() << endl;
