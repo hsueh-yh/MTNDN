@@ -72,7 +72,7 @@ Publisher::init()
 		 << " FrameCount: " << frameCount_
 		 << " Repertory: 0 - " << ptmp - repertory_ << endl;
 
-	//view();
+	view();
 
 	if (feof(ifp))
 		return true;
@@ -103,7 +103,7 @@ void Publisher::view()
 			 <<pframe->header_.length_<<endl;
 
 		//printf("%d %d\n",i, pframe->header_.length_);
-		for( int i = 0; i <40; i++ )
+		for( int i = 0; i <20; i++ )
 			printf("%2X ",pframe->buf_[i]);
 		cout << endl << endl;
 	}
@@ -173,6 +173,7 @@ void Publisher::operator()
 	for( int i = 0; i <30; i++ )
 		printf("%2X ",data.getContent().buf()[i]);
 	cout << endl << endl;
+
 	//fwrite(data.getContent().buf(), data.getContent().size(),1,outfp);
 }
 
