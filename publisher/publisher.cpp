@@ -72,7 +72,7 @@ Publisher::init()
 		 << " FrameCount: " << frameCount_
 		 << " Repertory: 0 - " << ptmp - repertory_ << endl;
 
-	view();
+	//view();
 
 	if (feof(ifp))
 		return true;
@@ -124,7 +124,9 @@ void Publisher::operator()
 
 
 	Name requestName(interest->getName());
-	string framenoStr = requestName.get(1).toEscapedString();
+	int componentCount = requestName.getComponentCount();
+	string framenoStr = requestName.get(componentCount-1).toEscapedString();
+
 	long requestNo = std::atoi(framenoStr.c_str());
 	long responseNo = requestNo % frameCount_;
 
