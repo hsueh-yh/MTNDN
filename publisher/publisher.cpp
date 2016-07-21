@@ -196,7 +196,7 @@ void Publisher::operator()
 	}
 	else
 	{
-		cout << "Deny" << endl;
+		cout << "Deny" << endl << endl;
 		return;
 	}
 
@@ -235,7 +235,7 @@ void Publisher::operator()
 		 << " by " << responseNo
 		 << " size:"
 		 << sizeof(FrameDataHeader) << "+"<<pframe->header_.length_ << "="
-		 << content.size () << endl;
+		 << content.size () << endl << endl;
 
 	face.putData(data);
 
