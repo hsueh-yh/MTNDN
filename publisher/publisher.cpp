@@ -13,7 +13,11 @@ Publisher::Publisher ( KeyChain &keyChain, const Name& certificateName ) :
 		ppsBuf_(NULL),
 		frameStart_(0),
 		frameCount_(0),
-		tmpbuf_(new uint8_t[WIDTH * HEIGHT * 3 / 2])
+		tmpbuf_(new uint8_t[WIDTH * HEIGHT * 3 / 2]),
+		tmpLen(0),
+		spsppsBuf_(NULL),
+		spsppsLen(0)
+
 {
 	ifp = fopen ( "out.264", "rb" );
 	if ( ifp == NULL )
@@ -44,8 +48,45 @@ Publisher::init()
 	repertory_ = (unsigned char*) malloc (fileLen);
 	fseek(ifp, 0, SEEK_SET);
 
-	int nalLength = 0, id = 0;
+	int nalLength = 0, id = -1;
 	unsigned char *ptmp = repertory_;
+
+	// read sps and pps
+	unsigned char *spspps = NULL;
+	FrameData *spsppsframe = (FrameData*) malloc (sizeof(FrameData));
+	while( !feof(ifp) && frameCount_ <= 1 )
+	{
+		nalLength = getNextNal ( ifp, ptmp );
+		if ( nalLength == 0 )
+			continue;
+		if ( frameCount_ == 0 )
+		{
+			spsppsLen += nalLength;
+			spsppsframe->header_.length_ = spsppsLen;
+			spsppsframe->header_.completeFrame_ = false;
+			spsppsframe->header_.encodedHeight_ = HEIGHT;
+			spsppsframe->header_.encodedWidth_ = WIDTH;
+			spsppsframe->header_.frameType_ = ParaSet;
+			spsppsframe->header_.frameNumber = 0;
+			spsppsframe->buf_ = ptmp;
+			spsppsBuf_ =ptmp;
+
+			ptmp += nalLength;
+			frameCount_++;
+		}
+		else
+		{
+			spsppsLen += nalLength;
+			spsppsframe->header_.length_ = spsppsLen;
+			ptmp += nalLength;
+			frameCount_++;
+		}
+	}
+	frameCount_ = 0;
+	mapRep_.insert(pair<int, FrameData*>(id, spsppsframe));
+	id++;
+
+	// read frames
 	while ( !feof(ifp) )
 	{
 		nalLength = getNextNal ( ifp, ptmp );
@@ -63,14 +104,17 @@ Publisher::init()
 			frame->buf_ = ptmp;
 			mapRep_.insert(pair<int, FrameData*>(id, frame));
 			frameCount_++;
+
+			++id;
+			ptmp += nalLength;
 		}
-		++id;
-		ptmp += nalLength;
 	}
 
-	cout << "Init mapRep: " << mapRep_.size()
-		 << " FrameCount: " << frameCount_
-		 << " Repertory: 0 - " << ptmp - repertory_ << endl;
+	cout << "Init mapRepSize: " << mapRep_.size()
+		 << ", FrameCount: " << frameCount_
+		 << ", Repertory: 0 - " << ptmp - repertory_
+		 << ", SPS&PPS: " << spsppsLen << " Byte"
+		 << endl << endl;
 
 	//view();
 
@@ -83,6 +127,13 @@ Publisher::init()
 void Publisher::view()
 {
 	FrameData *pframe;
+
+	cout << "SPS and PPS : " << spsppsLen <<endl;
+	for( int i = 0; i < spsppsLen; i++ )
+	{
+		printf("%2X ",spsppsBuf_[i]);
+	}
+	cout << endl << endl;
 
 	for ( int i = 0; i < frameCount_; i++ )
 	{
@@ -103,7 +154,7 @@ void Publisher::view()
 			 <<pframe->header_.length_<<endl;
 
 		//printf("%d %d\n",i, pframe->header_.length_);
-		for( int i = 0; i <20; i++ )
+		for( int i = 0; (i < 40 && i < pframe->header_.length_); i++ )
 			printf("%2X ",pframe->buf_[i]);
 		cout << endl << endl;
 	}
@@ -149,12 +200,27 @@ void Publisher::operator()
 		return;
 	}
 
-	size_t tmpLen = sizeof(FrameDataHeader) + pframe->header_.length_;
-	//unsigned char* tmp = (unsigned char* ) malloc (tmpLen);
 
-	memcpy(tmpbuf_, pframe, sizeof(FrameDataHeader));	//copy frame header
-	memcpy(tmpbuf_ + sizeof(FrameDataHeader), pframe->buf_, pframe->header_.length_ );	//copy frame data
+	if( requestNo == 0)
+	{
+		FrameDataHeader respFram;
 
+		memcpy( &respFram, pframe, sizeof(FrameDataHeader));
+
+		tmpLen = sizeof(FrameDataHeader) + respFram.length_ + spsppsLen;
+		respFram.length_ += spsppsLen;
+
+		memcpy(tmpbuf_, &respFram, sizeof(FrameDataHeader));	//copy frame header
+		memcpy(tmpbuf_ + sizeof(FrameDataHeader), spsppsBuf_, spsppsLen);	//copy sps and pps
+		memcpy(tmpbuf_ + sizeof(FrameDataHeader)+spsppsLen, pframe->buf_, pframe->header_.length_ );	//copy frame data
+	}
+	else
+	{
+		tmpLen = sizeof(FrameDataHeader) + pframe->header_.length_;
+
+		memcpy(tmpbuf_, pframe, sizeof(FrameDataHeader));	//copy frame header
+		memcpy(tmpbuf_ + sizeof(FrameDataHeader), pframe->buf_, pframe->header_.length_ );	//copy frame data
+	}
 
 	const Blob content ( tmpbuf_, tmpLen );
 
@@ -166,15 +232,16 @@ void Publisher::operator()
 	keyChain_.sign(data, certificateName_);
 
 	cout << "Response: " << requestNo
+		 << " by " << responseNo
 		 << " size:"
 		 << sizeof(FrameDataHeader) << "+"<<pframe->header_.length_ << "="
 		 << content.size () << endl;
 
 	face.putData(data);
 
-	for( int i = 0; i <30; i++ )
-		printf("%2X ",data.getContent().buf()[i]);
-	cout << endl << endl;
+//	for( int i = 0; i <30; i++ )
+//		printf("%2X ",data.getContent().buf()[i]);
+//	cout << endl << endl;
 
 	//fwrite(data.getContent().buf(), data.getContent().size(),1,outfp);
 }
