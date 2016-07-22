@@ -67,6 +67,9 @@ public:
 	long frameCount_;
 
 	unsigned char* tmpbuf_;
+	size_t tmpLen;
+	unsigned char* spsppsBuf_;
+	int spsppsLen;
 
 
 public:

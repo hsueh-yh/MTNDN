@@ -19,6 +19,7 @@
 
 
 enum FrameType{
+	ParaSet  = -1,
 	IFrame = 0,
 	PFrame = 1,
 	BFrame = 2
