@@ -4,6 +4,8 @@
 #include "publisher.h"
 
 
+#define REQUEST_FIRST_FRAME_ 0
+
 Publisher::Publisher ( KeyChain &keyChain, const Name& certificateName ) :
 		keyChain_ ( keyChain ),
 		certificateName_ ( certificateName ),
@@ -201,7 +203,7 @@ void Publisher::operator()
 	}
 
 
-	if( requestNo == 0)
+	if( requestNo == REQUEST_FIRST_FRAME_ )
 	{
 		FrameDataHeader respFram;
 
