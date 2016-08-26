@@ -2,12 +2,14 @@
 #include <iostream>
 #include <time.h>
 #include <unistd.h>
+#include <ndn-cpp/transport/tcp-transport.hpp>
+#include <ndn-cpp/transport/unix-transport.hpp>
 
 #include "publisher.h"
 
 
 //#define HOST_DEFAULT "localhost"
-#define HOST_DEFAULT "10.103.240.100"
+#define HOST_DEFAULT "10.103.243.176"
 #define PORT_DEFAULT 6363
 
 using namespace std;
@@ -16,6 +18,15 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	try {
+		boost::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
+		boost::shared_ptr<ndn::Transport> transport;
+
+		connInfo.reset(new TcpTransport::ConnectionInfo(HOST_DEFAULT, PORT_DEFAULT));
+		transport.reset(new TcpTransport());
+
+		Face *face1 = new Face(transport, connInfo);
+
+
 		// The default Face will connect using a Unix socket, or to "localhost".
 		//Face face(HOST_DEFAULT,PORT_DEFAULT);
 		Face face;
