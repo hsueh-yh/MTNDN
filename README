@@ -1,5 +1,8 @@
 version 0.1
 
+[Project]
+*Console program
+
 [Function]
 *Multimedia delivery over NDN.
 
