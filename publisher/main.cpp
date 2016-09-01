@@ -8,8 +8,8 @@
 #include "publisher.h"
 
 
-//#define HOST_DEFAULT "localhost"
-#define HOST_DEFAULT "10.103.243.176"
+#define HOST_DEFAULT "localhost"
+//#define HOST_DEFAULT "10.103.243.176"
 #define PORT_DEFAULT 6363
 
 using namespace std;
