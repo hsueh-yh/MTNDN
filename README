@@ -1,0 +1,8 @@
+version 0.1
+
+[Function]
+*Multimedia delivery over NDN.
+
+[Changes]
+*Capture frames and name them.
+*Fetch each frame,then decode and show it.
