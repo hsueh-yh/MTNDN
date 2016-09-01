@@ -1,1 +1,8 @@
-test
+version 0.2
+
+[Function]
+*Realtime streaming (eg. video surveillance)
+
+[Changes]
+*Segment frames and name each segments.
+*Retransmission losed segment before the playback deadline.
