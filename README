@@ -1,8 +1,9 @@
 version 0.2
 
 [Function]
-*Realtime streaming (eg. video surveillance)
+*Multimedia delivery over NDN.
+*Request and show frame.
 
 [Changes]
-*Segment frames and name each segments.
-*Retransmission losed segment before the playback deadline.
+*Change to qt project and add ui.
+*Simulate multi user request video in NDN.
