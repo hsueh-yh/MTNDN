@@ -1,5 +1,8 @@
 version 0.2
 
+[Project]
+*QT project
+
 [Function]
 *Multimedia delivery over NDN.
 *Request and show frame.
