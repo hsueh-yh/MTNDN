@@ -24,7 +24,10 @@ SOURCES += main.cpp\
     player.cpp \
     utils.cpp \
     addstreamdialog.cpp \
-    myTimer.cpp
+    myTimer.cpp \
+    frame-data.cpp \
+    name-components.cpp \
+    namespacer.cpp
 
 HEADERS  += mainwindow.h \
     common.h \
@@ -41,7 +44,10 @@ HEADERS  += mainwindow.h \
     utils.h \
     addstreamdialog.h \
     simulator.h \
-    myTimer.h
+    myTimer.h \
+    tmp.hpp \
+    name-components.h \
+    namespacer.h
 
 
 CONFIG += C++11
