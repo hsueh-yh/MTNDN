@@ -10,12 +10,12 @@ TARGET = publisher
 OBJECTS = publisher.o	
 
 
-all:main
+all:$(TARGET)
 	
-main: $(OBJECTS)
+$(TARGET): $(OBJECTS)
 	$(CC) $(PARAM) -o $(TARGET) main.cpp $(OBJECTS) $(LIB)
 
-publisher.o:
+$(OBJECTS):
 	$(CC) $(PARAM) -c common.h defines.h frame-data.h publisher.h publisher.cpp
 
 
