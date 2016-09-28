@@ -12,6 +12,7 @@
 #include "pipeliner.h"
 #include "consumer.h"
 #include "frame-data.h"
+#include "logger.hpp"
 
 using namespace std;
 
@@ -129,7 +130,8 @@ PipelinerWindow::changeWindow(int delta)
 Pipeliner::Pipeliner(std::string prefix):
     basePrefix_(prefix.c_str()),
     count_(0),
-    state_(Stoped)
+    state_(Stoped),
+    isRetransmission(false)
 {
 
 //	pipelinerFIle_ = fopen ( "pipelinerFIle_.264", "wb+" );
@@ -186,6 +188,8 @@ Pipeliner::express(Name& name/*, int64_t priority*/)
             name,
             bind(&Pipeliner::onData, this, _1, _2),
             bind(&Pipeliner::onTimeout, this, _1));
+    statistic.addRequest();
+    LOG(INFO) << "Express Interest " << name.to_uri() << endl;
 
 #ifdef __SHOW_CONSOLE_
     time_t t = time(NULL);
@@ -292,6 +296,10 @@ void
 Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 		const ptr_lib::shared_ptr<Data>& data)
 {
+    LOG(INFO) << "Recieve Data " << data->getName().to_uri() << endl;
+
+    statistic.addData();
+
     if (getState() == Stoped)
         return;
     int componentCount = data->getName().getComponentCount();
@@ -336,15 +344,18 @@ Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 void
 Pipeliner::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
+    statistic.markMiss();
+    LOG(WARNING) << "Timeout " << interest->getName().to_uri()
+                 << " ( Loss Rate = " << statistic.getLostRate() << " )"<< endl;
 
-#ifdef __SHOW_CONSOLE_
-    cout << "Pipeliner timeout: " << interest->getName().toUri()<< endl;
-#endif
+    if( isRetransmission )
+    {
 
-    int componentCount = interest->getName().getComponentCount();
-    FrameNumber frameNo = std::atoi(interest->getName().get(componentCount-1).toEscapedString().c_str());
-
-    requestFrame(frameNo);
+        int componentCount = interest->getName().getComponentCount();
+        FrameNumber frameNo = std::atoi(interest->getName().get(componentCount-1).toEscapedString().c_str());
+        requestFrame(frameNo);
+        LOG(INFO) << "Retrans " << interest->getName().to_uri();
+    }
 }
 
 

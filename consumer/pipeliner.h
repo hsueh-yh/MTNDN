@@ -18,6 +18,7 @@
 #include "common.h"
 #include "frame-buffer.h"
 #include "face-wrapper.h"
+#include "statistics.hpp"
 
 using namespace ndn;
 
@@ -122,6 +123,8 @@ private:
     PipelinerWindow window_;
 
     //FILE *pipelinerFIle_;
+    Statistics statistic;
+    bool isRetransmission;
 
     int count_;
     State state_;

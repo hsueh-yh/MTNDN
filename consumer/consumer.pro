@@ -43,7 +43,9 @@ HEADERS  += \
     utils.h \
     addstreamdialog.h \
     simulator.h \
-    myTimer.h
+    myTimer.h \
+    logger.hpp \
+    statistics.hpp
 
 LIBS += \
     -lboost_thread \
@@ -66,6 +68,9 @@ CONFIG += C++11
 
 FORMS    += mainwindow.ui \
     addstreamdialog.ui
+
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include
 
 # ffmpeg
 INCLUDEPATH += $$PWD/include/ffmpeg
