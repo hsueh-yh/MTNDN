@@ -9,13 +9,16 @@
 
 #include "utils.h"
 #include "frame-buffer.h"
+#include "statistics.hpp"
+#include "logger.hpp"
 
 
 ////////////////////////////////////////////////////////////////
 ///     FrameBuffer::Slot
 ////////////////////////////////////////////////////////////////
 
-FrameBuffer::Slot::Slot()
+FrameBuffer::Slot::Slot():
+    statistic(Statistics::getInstance())
 {
     resetData();
 }
@@ -70,6 +73,10 @@ FrameBuffer::Slot::dataArrived ()
 {
     state_ = StateFetched;
     arrivalTimeUsec_ = NdnRtcUtils::microsecondTimestamp();
+    uint64_t delay = arrivalTimeUsec_-requestTimeUsec_;
+    statistic->addData(delay);
+    LOG(INFO) << "Delay " << delay/1000
+              << "ms ( average: " << statistic->getDelay()/1000 << "ms )" << endl;
 }
 
 

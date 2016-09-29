@@ -131,7 +131,8 @@ Pipeliner::Pipeliner(std::string prefix):
     basePrefix_(prefix.c_str()),
     count_(0),
     state_(Stoped),
-    isRetransmission(false)
+    isRetransmission(false),
+    statistic(Statistics::getInstance())
 {
 
 //	pipelinerFIle_ = fopen ( "pipelinerFIle_.264", "wb+" );
@@ -188,7 +189,7 @@ Pipeliner::express(Name& name/*, int64_t priority*/)
             name,
             bind(&Pipeliner::onData, this, _1, _2),
             bind(&Pipeliner::onTimeout, this, _1));
-    statistic.addRequest();
+    statistic->addRequest();
     LOG(INFO) << "Express Interest " << name.to_uri() << endl;
 
 #ifdef __SHOW_CONSOLE_
@@ -298,8 +299,6 @@ Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 {
     LOG(INFO) << "Recieve Data " << data->getName().to_uri() << endl;
 
-    statistic.addData();
-
     if (getState() == Stoped)
         return;
     int componentCount = data->getName().getComponentCount();
@@ -344,9 +343,9 @@ Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 void
 Pipeliner::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
-    statistic.markMiss();
+    statistic->markMiss();
     LOG(WARNING) << "Timeout " << interest->getName().to_uri()
-                 << " ( Loss Rate = " << statistic.getLostRate() << " )"<< endl;
+                 << " ( Loss Rate = " << statistic->getLostRate() << " )"<< endl;
 
     if( isRetransmission )
     {

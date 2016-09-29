@@ -1,102 +1,13 @@
+#ifndef _SIMULATOR_H_
+#define _SIMULATOR_H_
+#define _SIMULATOR_ACCURACY_ 1000000
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 #include <iostream>
 #include "common.h"
-
-#ifndef _SIMULATOR_H_
-#define _SIMULATOR_H_
-#define _SIMULATOR_ACCURACY_ 1000000
-
-/*
- *	Zipf distribution function:	F(x) = 1 - ( X_m / x )^a
- *	@alpha:
- *	@x_min :
- */
-static double *pareto( double alpha, int n, double min, double max )
-{
-    double x;
-    double *result;
-    int size = max - min;
-
-    result = (double*) malloc ( sizeof(double) * n );
-
-    srand((unsigned)time(NULL));
-    for ( int i = 0; i < n; i++ )
-    {
-        result[i] = 0.0;
-    }
-
-    for ( int i = 0; i < n; i++ )
-    {
-        x = (double)(rand()%_SIMULATOR_ACCURACY_) /_SIMULATOR_ACCURACY_;
-
-        //the inverse function of Pareto distribution function
-        double k = min * (double)pow( (1-x), (-1.0/alpha) );
-
-        // if this random number is out of range
-        if ( k >= min && k <= max )
-        {
-            result[i] = k;
-        }
-        else
-        {
-            i--;
-        }
-    }
-
-    return result;
-}
-
-
-/*
- *	Zipf distribution law:	P(x) = C / (x^a);
- *
- */
-static int *zipf( double alpha, int n )
-{
-    double c=0.0, x=0.0;
-
-    for ( int i = 1; i <= n; i++ )
-    {
-        c += ( 1/pow(i,alpha));
-    }
-    c = 1/c;
-
-    //printf("\nC = %lf n = %d\n",c, n);
-
-    int *result = (int*) malloc ( sizeof(int) * n );
-
-    double sum = 0.0;
-
-    srand((unsigned)time(NULL));
-    for ( int i = 0; i < n; i++ )
-    {
-        x = (double)(rand()%_SIMULATOR_ACCURACY_) /_SIMULATOR_ACCURACY_;
-
-        int j = 0;
-        sum = 0.0;
-        while ( ++j <= n )
-        {
-            sum += c / pow( j, alpha );
-            if ( x <= sum )
-                break;
-        }
-
-        if ( j > n )
-            i--;
-        else
-            result[i] = j;
-    }
-
-    return result;
-}
-
-
-static int durationCounter = -1;
-static int jobCounter = -1;
-
 
 class Simulator
 {
@@ -237,6 +148,97 @@ private:
     // zipf parameters
     double  z_alpha;
     int     z_quantity;
+
+
+    /*
+     *	Zipf distribution function:	F(x) = 1 - ( X_m / x )^a
+     *	@alpha:
+     *	@x_min :
+     */
+    double *pareto( double alpha, int n, double min, double max )
+    {
+        double x;
+        double *result;
+        int size = max - min;
+
+        result = (double*) malloc ( sizeof(double) * n );
+
+        srand((unsigned)time(NULL));
+        for ( int i = 0; i < n; i++ )
+        {
+            result[i] = 0.0;
+        }
+
+        for ( int i = 0; i < n; i++ )
+        {
+            x = (double)(rand()%_SIMULATOR_ACCURACY_) /_SIMULATOR_ACCURACY_;
+
+            //the inverse function of Pareto distribution function
+            double k = min * (double)pow( (1-x), (-1.0/alpha) );
+
+            // if this random number is out of range
+            if ( k >= min && k <= max )
+            {
+                result[i] = k;
+            }
+            else
+            {
+                i--;
+            }
+        }
+
+        return result;
+    }
+
+
+    /*
+     *	Zipf distribution law:	P(x) = C / (x^a);
+     *
+     */
+    int *zipf( double alpha, int n )
+    {
+        double c=0.0, x=0.0;
+
+        for ( int i = 1; i <= n; i++ )
+        {
+            c += ( 1/pow(i,alpha));
+        }
+        c = 1/c;
+
+        //printf("\nC = %lf n = %d\n",c, n);
+
+        int *result = (int*) malloc ( sizeof(int) * n );
+
+        double sum = 0.0;
+
+        srand((unsigned)time(NULL));
+        for ( int i = 0; i < n; i++ )
+        {
+            x = (double)(rand()%_SIMULATOR_ACCURACY_) /_SIMULATOR_ACCURACY_;
+
+            int j = 0;
+            sum = 0.0;
+            while ( ++j <= n )
+            {
+                sum += c / pow( j, alpha );
+                if ( x <= sum )
+                    break;
+            }
+
+            if ( j > n )
+                i--;
+            else
+                result[i] = j;
+        }
+
+        return result;
+    }
+
+
+    int durationCounter = -1;
+    int jobCounter = -1;
+
+
 
 };
 

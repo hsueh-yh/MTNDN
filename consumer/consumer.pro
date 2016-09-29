@@ -25,7 +25,8 @@ SOURCES += \
     player.cpp \
     utils.cpp \
     addstreamdialog.cpp \
-    myTimer.cpp
+    myTimer.cpp \
+    statistics.cpp
 
 HEADERS  += \
     mainwindow.h \

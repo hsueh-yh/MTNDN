@@ -22,6 +22,7 @@
 #include <ndn-cpp/data.hpp>
 
 #include "frame-data.h"
+#include "statistics.hpp"
 
 using namespace std;
 using namespace ndn;
@@ -171,6 +172,7 @@ public:
                 arrivalTimeUsec_; // local timestamp when data for this
                                   // frame has arrived
         std::recursive_mutex syncMutex_;
+        Statistics *statistic;
 
         void resetData();
 
@@ -287,7 +289,6 @@ public:
 
     //PriorityQueue priorityQueue_;
 	std::recursive_mutex syncMutex_;
-
 
     //std::vector<boost::shared_ptr<Slot> > issuedSlots_;
     std::map<int, boost::shared_ptr<Slot> > activeSlots_;

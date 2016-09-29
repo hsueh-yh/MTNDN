@@ -245,6 +245,14 @@ int64_t NdnRtcUtils::microsecondTimestamp()
     return usec.count();
 };
 
+// system clock
+double NdnRtcUtils::unixTimestamp()
+{
+    auto now = boost::chrono::system_clock::now().time_since_epoch();
+    boost::chrono::duration<double> sec = now;
+    return sec.count();
+}
+
 //******************************************************************************
 /*
 unsigned int NdnRtcUtils::getSegmentsNumber(unsigned int segmentSize, unsigned int dataSize)

@@ -18,6 +18,7 @@
 #include "frame-buffer.h"
 #include "pipeliner.h"
 #include "player.h"
+#include "statistics.hpp"
 
 using namespace std;
 using namespace ndn;
@@ -56,12 +57,14 @@ public:
 	boost::shared_ptr<FrameBuffer> frameBuffer_;
 	boost::shared_ptr<Pipeliner> pipeliner_;
     boost::shared_ptr<Player> player_;
+    static Statistics statistic;
 
 private:
 
     //Name *name;
     std::string prefix_;
     int callbackCount_;
+
 
     Status status_;
 

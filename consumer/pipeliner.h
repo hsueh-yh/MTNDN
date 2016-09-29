@@ -123,7 +123,7 @@ private:
     PipelinerWindow window_;
 
     //FILE *pipelinerFIle_;
-    Statistics statistic;
+    Statistics *statistic;
     bool isRetransmission;
 
     int count_;
