@@ -5,6 +5,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <map>
+#include   <time.h>
+#include <math.h>
 
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
@@ -70,6 +72,8 @@ public:
 	size_t tmpLen;
 	unsigned char* spsppsBuf_;
 	int spsppsLen;
+
+	double lostRate_;
 
 
 public:

@@ -1,6 +1,7 @@
 
 #include <arpa/inet.h>
 
+
 #include "publisher.h"
 
 
@@ -18,7 +19,8 @@ Publisher::Publisher ( KeyChain &keyChain, const Name& certificateName ) :
 		tmpbuf_(new uint8_t[WIDTH * HEIGHT * 3 / 2]),
 		tmpLen(0),
 		spsppsBuf_(NULL),
-		spsppsLen(0)
+		spsppsLen(0),
+		lostRate_(1.0/50.0)
 
 {
 	ifp = fopen ( "out.264", "rb" );
@@ -43,6 +45,7 @@ Publisher::~Publisher ()
 bool
 Publisher::init()
 {
+	srand((unsigned)time(0));
 	long fileLen;
 	fseek(ifp, 0, SEEK_END);
 	fileLen = ftell(ifp);
@@ -171,10 +174,15 @@ void Publisher::operator()
 							uint64_t interestFilterId,
 							const ptr_lib::shared_ptr<const InterestFilter>& filter )
 {
-	++responseCount_;
+	double tmp = rand();
+	cout << tmp << endl;
+	if( tmp < lostRate_)
+	{
+		cout << "LOST " << tmp << " " << lostRate_ << endl;
+		return;
+	}
 	++count;
 	//cout << "Got an interest..." << endl;
-
 
 	Name requestName(interest->getName());
 	int componentCount = requestName.getComponentCount();
@@ -240,6 +248,7 @@ void Publisher::operator()
 		 << content.size () << endl << endl;
 
 	face.putData(data);
+	++responseCount_;
 
 //	for( int i = 0; i <30; i++ )
 //		printf("%2X ",data.getContent().buf()[i]);
