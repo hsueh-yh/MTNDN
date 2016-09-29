@@ -27,13 +27,11 @@ FrameBuffer::Slot::Slot():
 FrameBuffer::Slot::~Slot()
 {}
 
-
 void
 FrameBuffer::Slot::discard()
 {
     resetData();
 }
-
 
 void
 FrameBuffer::Slot::resetData()
@@ -47,7 +45,6 @@ FrameBuffer::Slot::resetData()
     prefix_ = Name();
 }
 
-
 void
 FrameBuffer::Slot::interestIssued()
 {
@@ -60,13 +57,11 @@ FrameBuffer::Slot::interestIssued()
     //reqCounter_++;
 }
 
-
 void
 FrameBuffer::Slot::markMissed()
 {
     state_ = StateMissing;
 }
-
 
 void
 FrameBuffer::Slot::dataArrived ()
@@ -75,7 +70,7 @@ FrameBuffer::Slot::dataArrived ()
     arrivalTimeUsec_ = NdnRtcUtils::microsecondTimestamp();
     uint64_t delay = arrivalTimeUsec_-requestTimeUsec_;
     statistic->addData(delay);
-    LOG(INFO) << "Delay " << delay/1000
+    LOG(INFO) << "Recieve Data " << prefix_.to_uri() <<  " Delay " << delay/1000
               << "ms ( average: " << statistic->getDelay()/1000 << "ms )" << endl;
 }
 
@@ -283,23 +278,6 @@ FrameBuffer::PlaybackQueue::dumpShort()
 ////////////////////////////////////////////////////////////////
 
 
-bool
-FrameBuffer::pushSlot(boost::shared_ptr<Slot> slot)
-{
-    std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
-
-    if(activeSlots_count_ >= 50)
-    {
-        //cout << "activeSlots_count_ " << activeSlots_count_ << endl;
-        return false;
-    }
-    playbackQueue_.push(slot);
-    activeSlots_count_++;
-
-    return true;
-}
-
-
 void
 FrameBuffer::dataArrived(const ndn::ptr_lib::shared_ptr<Data>& data)
 {
@@ -317,6 +295,25 @@ FrameBuffer::dataArrived(const ndn::ptr_lib::shared_ptr<Data>& data)
     setSlot(data, iter->second);
 }
 
+void
+FrameBuffer::dataMissed(const ptr_lib::shared_ptr<const Interest>& interest )
+{
+    int componentCount = interest->getName().getComponentCount();
+    FrameNumber frameNo = std::atoi(interest->getName().get(componentCount-1).toEscapedString().c_str());
+    map<int, boost::shared_ptr<Slot> >::iterator iter;
+    iter = activeSlots_.find(frameNo);
+
+    if ( iter == activeSlots_.end() )
+    {
+        cout << "FrameBuffer::dataMissed Error " << endl;
+        return;
+    }
+    boost::shared_ptr<Slot> slot = iter->second;
+    slot->markMissed();
+
+    LOG(WARNING) << "[FrameBuffer] miss " << interest->getName().to_uri()
+                 << " ( remain " << activeSlots_count_ << " )"<< endl;
+}
 
 void
 FrameBuffer::setSlot(const ndn::ptr_lib::shared_ptr<Data>& data, boost::shared_ptr<FrameBuffer::Slot> slot)
@@ -354,21 +351,49 @@ FrameBuffer::setSlot(const ndn::ptr_lib::shared_ptr<Data>& data, boost::shared_p
 
 }
 
+bool
+FrameBuffer::pushSlot(boost::shared_ptr<Slot> slot)
+{
+    std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
+
+    if(activeSlots_count_ >= 50)
+    {
+        //cout << "activeSlots_count_ " << activeSlots_count_ << endl;
+        return false;
+    }
+    playbackQueue_.push(slot);
+    activeSlots_count_++;
+    LOG(WARNING) << "[FrameBuffer] push " << slot->getPrefix().to_uri()
+                 << " ( remain " << activeSlots_count_ << " )"<< endl;
+
+    return true;
+}
 
 boost::shared_ptr<FrameBuffer::Slot>
 FrameBuffer::popSlot()
 {
-	std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
+    std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
 
     if ( playbackQueue_.empty() )
+    {
+        LOG(WARNING) << "[Player] empty" << activeSlots_count_ << endl;
         return NULL;
+    }
 
     boost::shared_ptr<Slot>  tmp;
     tmp = playbackQueue_.top();
 	//FrameBuffer::Slot*  tmp = priorityQueue_.front();
 
     if( tmp->getState() != FrameBuffer::Slot::StateFetched )
+    {
+        if( tmp->getNumber() < 3 )
+            return NULL;
+        LOG(WARNING) << "[FrameBuffer] Skip " << tmp->getPrefix()
+                     << " ( remain " << activeSlots_count_ << " )"<< endl;
+        playbackQueue_.pop();
+        activeSlots_count_--;
         return NULL;
+    }
 
     map<int, boost::shared_ptr<Slot> >::iterator iter;
 
@@ -379,5 +404,7 @@ FrameBuffer::popSlot()
     playbackQueue_.pop();
     activeSlots_count_--;
 
+    LOG(WARNING) << "[FrameBuffer] pop " << tmp->getPrefix()
+                 << " ( remain " << activeSlots_count_ << " )"<< endl;
 	return tmp;
 }

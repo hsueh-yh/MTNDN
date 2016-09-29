@@ -216,6 +216,8 @@ public:
 
     void dataArrived(const ndn::ptr_lib::shared_ptr<Data>& data);
 
+    void dataMissed(const ptr_lib::shared_ptr<const Interest>& interest );
+
     boost::shared_ptr<FrameBuffer::Slot> popSlot();
 
 

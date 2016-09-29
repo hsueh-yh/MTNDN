@@ -211,7 +211,7 @@ Pipeliner::requestFrame(PacketNumber& frameNo)
         //cout << "Windown: " << window_.getCurrentWindowSize() << endl;
         usleep(10*1000);
     }
-
+    LOG(INFO) << "Request " << frameNo << endl;
     Name packetPrefix(basePrefix_);
     packetPrefix.append(NdnRtcUtils::componentFromInt(frameNo));
     //packetPrefix.appendTimestamp(NdnRtcUtils::microsecondTimestamp());
@@ -297,7 +297,7 @@ void
 Pipeliner::onData(const ptr_lib::shared_ptr<const Interest>& interest,
 		const ptr_lib::shared_ptr<Data>& data)
 {
-    LOG(INFO) << "Recieve Data " << data->getName().to_uri() << endl;
+    //LOG(INFO) << "Recieve Data " << data->getName().to_uri() << endl;
 
     if (getState() == Stoped)
         return;
@@ -346,6 +346,18 @@ Pipeliner::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
     statistic->markMiss();
     LOG(WARNING) << "Timeout " << interest->getName().to_uri()
                  << " ( Loss Rate = " << statistic->getLostRate() << " )"<< endl;
+
+    int componentCount = interest->getName().getComponentCount();
+    FrameNumber frameNo = std::atoi(interest->getName().get(componentCount-1).toEscapedString().c_str());
+    window_.dataArrived(frameNo);
+
+    frameBuffer_->lock();
+
+    if( frameBuffer_->stat_ == FrameBuffer::State::Stoped)
+        return;
+
+    frameBuffer_->dataMissed(interest);
+    frameBuffer_->unlock();
 
     if( isRetransmission )
     {

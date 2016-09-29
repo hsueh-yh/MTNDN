@@ -6,6 +6,7 @@
  */
 
 #include "player.h"
+#include "logger.hpp"
 
 static int
 FindStartCode(unsigned char *Buf, int zeros_in_startcode)
@@ -260,10 +261,13 @@ Player::refresh()
 
     while ( slot== NULL )
     {
+        LOG(INFO) << "[Player] wait frame " << endl;
         slot = frameBuffer_->popSlot();
-        usleep(1000);
+        usleep(10000);
         //return false;
     }
+
+    LOG(INFO) << "[Player] get " << slot->getNumber() << endl;
 
     unsigned char *p_In_Frame = slot->getDataPtr();
     int outlen, inlen;
@@ -282,12 +286,7 @@ Player::refresh()
 
     if ( outlen > 0 )
     {
-
-#ifdef __SHOW_CONSOLE_
-        cout << "[Play]  : "
-             << slot->getNumber() << " "
-             << slot->getPayloadSize() << " "<<endl;
-#endif
+        LOG(INFO) << "[Player] play " << slot->getNumber() << endl;
 
         unsigned char* yuv[3] = {yuv_frameBuf_,yuv_frameBuf_+ WIDTH*HEIGHT, yuv_frameBuf_ +WIDTH*HEIGHT*5/4};
 
