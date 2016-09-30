@@ -311,7 +311,7 @@ FrameBuffer::dataMissed(const ptr_lib::shared_ptr<const Interest>& interest )
     boost::shared_ptr<Slot> slot = iter->second;
     slot->markMissed();
 
-    LOG(WARNING) << "[FrameBuffer] miss " << interest->getName().to_uri()
+    LOG(INFO) << "[FrameBuffer] miss " << interest->getName().to_uri()
                  << " ( remain " << activeSlots_count_ << " )"<< endl;
 }
 
@@ -363,7 +363,7 @@ FrameBuffer::pushSlot(boost::shared_ptr<Slot> slot)
     }
     playbackQueue_.push(slot);
     activeSlots_count_++;
-    LOG(WARNING) << "[FrameBuffer] push " << slot->getPrefix().to_uri()
+    LOG(INFO) << "[FrameBuffer] push " << slot->getPrefix().to_uri()
                  << " ( remain " << activeSlots_count_ << " )"<< endl;
 
     return true;
@@ -376,7 +376,7 @@ FrameBuffer::popSlot()
 
     if ( playbackQueue_.empty() )
     {
-        LOG(WARNING) << "[Player] empty" << activeSlots_count_ << endl;
+        LOG(INFO) << "[Player] empty" << activeSlots_count_ << endl;
         return NULL;
     }
 
@@ -404,7 +404,7 @@ FrameBuffer::popSlot()
     playbackQueue_.pop();
     activeSlots_count_--;
 
-    LOG(WARNING) << "[FrameBuffer] pop " << tmp->getPrefix()
+    LOG(INFO) << "[FrameBuffer] pop " << tmp->getPrefix()
                  << " ( remain " << activeSlots_count_ << " )"<< endl;
 	return tmp;
 }
