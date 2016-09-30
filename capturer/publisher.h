@@ -76,6 +76,16 @@ private:
 
     Capturer capturer;
     Encoder encoder;
+
+    int width = 640, height = 480;
+
+    unsigned char* outbufYUV = NULL;
+    int outlenYUV = 0;
+    unsigned char* outbuf264 = NULL;
+    int outlen264 = 0;
+
+    bool isRecordYUV, isRecord264;
+    FILE *fp_yuv, *fp_264;
 };
 
 

@@ -1,103 +1,67 @@
+#include <cstdlib>
 #include <iostream>
+#include <time.h>
+#include <unistd.h>
+#include <ndn-cpp/transport/tcp-transport.hpp>
+#include <ndn-cpp/transport/unix-transport.hpp>
 
-#include "capturer.hpp"
-#include "encoder.hpp"
+#include "publisher.h"
+
+
+#define HOST_DEFAULT "localhost"
+//#define HOST_DEFAULT "10.103.243.176"
+#define PORT_DEFAULT 6363
 
 using namespace std;
 
-int main()
+
+int main(int argc, char** argv)
 {
-    Capturer cap;
-    Encoder encoder;
-    int width = 640, height = 480;
+    try {
+        std::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
+        std::shared_ptr<ndn::Transport> transport;
 
-    int isencode = 1;
+        connInfo.reset(new TcpTransport::ConnectionInfo(HOST_DEFAULT, PORT_DEFAULT));
+        transport.reset(new TcpTransport());
 
-    FILE *fp_yuv, *fp_264;
+        Face *face1 = new Face(transport, connInfo);
 
-    unsigned char* outbufYUV = NULL;
-    int outlenYUV = 0;
-    unsigned char* outbuf264 = NULL;
-    int outlen264 = 0;
 
-    int flg = 1;
+        // The default Face will connect using a Unix socket, or to "localhost".
+        //Face face(HOST_DEFAULT,PORT_DEFAULT);
+        Face face;
 
-    cout << endl;
+        // Use the system default key chain and certificate name to sign commands.
+        KeyChain keyChain;
+        face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName());
 
-    fp_yuv=fopen("output.yuv","wb+");
-    if( !fp_yuv )
-    {
-        cout << "open file fp_yuv error" << endl;
-    }
-    else
-        cout << "open file fp_yuv success" << endl;
-
-    if( isencode )
-    {
-        fp_264=fopen("output.264","wb+");
-        if( !fp_264 )
+        // Also use the default certificate name to sign data packets.
+        Publisher publisher(keyChain, keyChain.getDefaultCertificateName());
+        if( !publisher.init() )
         {
-            cout << "open file output.264 error" << endl;
-        }
-        else
-            cout << "open file output.264 success" << endl;
-    }
-
-    cap.init();
-    cap.start();
-
-    if ( isencode )
-    {
-        encoder.init(AV_CODEC_ID_H264);
-    }
-
-    outbufYUV = (unsigned char*) malloc (width*height*3/2);
-
-    if( isencode) outbuf264 = (unsigned char*) malloc (width*height*3/2);
-
-    cout << "********************************************" << endl;
-
-    for( int i = 0, j = 0; i < 100; i++ )
-    {
-        cap.getFrame(outbufYUV, outlenYUV );
-
-        if( outlenYUV != 0 )
-        {
-            cout << "get YUV " << i <<endl;
-            fwrite(outbufYUV,1,outlenYUV,fp_yuv);
-        }
-        else
-        {
-            cout << "error" << endl;
-            return -1;
+            cout << "Publisher init fail" << endl;
+            return 0;
         }
 
-        if( isencode && outlenYUV != 0 )
-        {
-            encoder.getFrame(i, outbufYUV, outlenYUV, outbuf264, outlen264);
-            if( outlen264 != 0 )
-            {
-                cout << "get 264 " << j++ << " ( size = " << outlen264 << " )" <<endl;
-                fwrite(outbuf264,1,outlen264,fp_264);
-            }
-            else
-                cout << "not 264" << endl;
+        Name prefix("/video");
+        cout << "Register prefix  " << prefix.toUri() << endl;
+        // TODO: After we remove the registerPrefix with the deprecated OnInterest,
+        // we can remove the explicit cast to OnInterestCallback (needed for boost).
+        cout << face.isLocal() << endl;
+        face.registerPrefix(prefix, (const OnInterestCallback&)func_lib::ref(publisher), func_lib::ref(publisher));
+
+
+        publisher.start();
+        // The main event loop.
+        // Wait forever to receive one interest for the prefix.
+        while ( publisher.stat ) {
+            face.processEvents();
+            // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+            usleep(100);
         }
-        //cout << endl;
     }
-    cout << "********************************************" << endl<<endl;
-
-    fclose(fp_yuv);
-    if ( isencode )
-    {
-        fclose(fp_264);
-        encoder.stop();
+    catch (std::exception& e) {
+        cout << "exception: " << e.what() << endl;
     }
-
-    cap.stop();
-
-
     return 0;
 }
-
-

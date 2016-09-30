@@ -18,8 +18,8 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	try {
-		boost::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
-		boost::shared_ptr<ndn::Transport> transport;
+		std::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
+		std::shared_ptr<ndn::Transport> transport;
 
 		connInfo.reset(new TcpTransport::ConnectionInfo(HOST_DEFAULT, PORT_DEFAULT));
 		transport.reset(new TcpTransport());
