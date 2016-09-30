@@ -12,6 +12,7 @@
 !/consumer/
 !/consumer/Makefile
 !/consumer/*.h
+!/consumer/*.hpp
 !/consumer/*.c
 !/consumer/*.cpp
 !/consumer/*.pro
@@ -22,6 +23,8 @@
 !/publisher/
 !/publisher/Makefile
 !/publisher/*.h
+!/publisher/*.hpp
+!/publisher/*.c
 !/publisher/*.cpp
 !/publisher/util/
 
