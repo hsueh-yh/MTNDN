@@ -6,6 +6,7 @@
 #include <ndn-cpp/transport/unix-transport.hpp>
 
 #include "publisher.h"
+#include "logger.hpp"
 
 
 #define HOST_DEFAULT "localhost"
@@ -17,6 +18,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+    GLogger glog(argv[0],"./logs");
     try {
         std::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
         std::shared_ptr<ndn::Transport> transport;

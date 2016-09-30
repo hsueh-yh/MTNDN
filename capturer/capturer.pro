@@ -21,7 +21,8 @@ HEADERS += \
     utils.h \
     namespacer.h \
     name-components.h \
-    publisher.h
+    publisher.h \
+    logger.hpp
 
 LIBS += \
     -lboost_thread \
