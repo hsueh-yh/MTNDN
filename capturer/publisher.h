@@ -28,7 +28,11 @@ public:
 
     int stop();
 
-    void view();
+    int getStatus()
+    { return stat; }
+
+    bool isCached( FrameNumber frameNo )
+    { return (frameNo >= cachedBegin_ && frameNo <= cachedEnd_) ? true : false; }
 
     // onInterest.
     void operator()
@@ -58,6 +62,8 @@ private:
 
     void excuteCapture();
 
+    void view();
+
     ndn::Name       streamPrefix_;
     std::string     location_;
     int             stream_;
@@ -68,9 +74,6 @@ private:
                     responseCount_;
 
     int stat;
-
-    int backup;
-    FILE *backupFile;
 
     boost::shared_ptr<FrameBuffer> framebuffer_;
 
@@ -84,8 +87,12 @@ private:
     unsigned char* outbuf264 = NULL;
     int outlen264 = 0;
 
-    bool isRecordYUV, isRecord264;
+    bool isBackupYUV, isBackup264;
     FILE *fp_yuv, *fp_264;
+
+    uint64_t    cacheSize_,
+                cachedBegin_,
+                cachedEnd_;
 };
 
 

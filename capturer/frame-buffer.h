@@ -16,15 +16,19 @@ class Publisher;
 class FrameBuffer
 {
 public:
+
     FrameBuffer();
     ~FrameBuffer();
+
     void init( int frameNumbers = 200 );
 
     void recvFrame( FrameData &frame, unsigned int frameNo );
 
     bool requestSegment( ndn::Interest& interest, SegmentData& segData );
 
+
 private:
+
     void reset();
 
     void initSlots();
@@ -34,10 +38,13 @@ private:
     boost::shared_ptr<Publisher> publisher_;
 
     std::vector<boost::shared_ptr<SegmentData> > freeSlots_;
-    std::map<ndn::Name, boost::shared_ptr<SegmentData> > activeSlots_;
+    //std::map<ndn::Name, boost::shared_ptr<SegmentData> > activeSlots_;
+    std::map<ndn::Name, std::pair<unsigned int, unsigned char*> > activeSlots_;
 
     int     maxSegBlockSize_,
             maxSegmentSize_;
+
+    unsigned char *buf_;
     int     bufSize_;
 
 };

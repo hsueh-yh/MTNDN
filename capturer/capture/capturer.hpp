@@ -234,6 +234,13 @@ public:
                 }
                 if(got_picture)
                 {
+					pFrame->data[0] += pFrame->linesize[0] * (pCodecCtx->height - 1);
+					pFrame->linesize[0] = -pFrame->linesize[0];
+					pFrame->data[1]+= pFrame->linesize[1] * (pCodecCtx->height / 2 - 1);
+					pFrame->linesize[1] = -pFrame->linesize[1];
+					pFrame->data[2] += pFrame->linesize[2]* (pCodecCtx->height / 2 - 1);
+					pFrame->linesize[2] = -pFrame->linesize[2];
+
                     sws_scale(img_convert_ctx, (const unsigned char* const*)pFrame->data,
                               pFrame->linesize, 0, pCodecCtx->height,
                               pFrameYUV->data, pFrameYUV->linesize);

@@ -19,14 +19,15 @@ using namespace std;
 int main(int argc, char** argv)
 {
     GLogger glog(argv[0],"./logs");
+
     try {
-        std::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
-        std::shared_ptr<ndn::Transport> transport;
+//        std::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
+//        std::shared_ptr<ndn::Transport> transport;
 
-        connInfo.reset(new TcpTransport::ConnectionInfo(HOST_DEFAULT, PORT_DEFAULT));
-        transport.reset(new TcpTransport());
+//        connInfo.reset(new TcpTransport::ConnectionInfo(HOST_DEFAULT, PORT_DEFAULT));
+//        transport.reset(new TcpTransport());
 
-        Face *face1 = new Face(transport, connInfo);
+//        Face *face1 = new Face(transport, connInfo);
 
 
         // The default Face will connect using a Unix socket, or to "localhost".
@@ -45,18 +46,20 @@ int main(int argc, char** argv)
             return 0;
         }
 
-        Name prefix("/video");
+        Name prefix = publisher.getStreamPrefix();
         cout << "Register prefix  " << prefix.toUri() << endl;
         // TODO: After we remove the registerPrefix with the deprecated OnInterest,
         // we can remove the explicit cast to OnInterestCallback (needed for boost).
         cout << face.isLocal() << endl;
-        face.registerPrefix(prefix, (const OnInterestCallback&)func_lib::ref(publisher), func_lib::ref(publisher));
+        face.registerPrefix(prefix,
+                            (const OnInterestCallback&)func_lib::ref(publisher),
+                            func_lib::ref(publisher));
 
 
         publisher.start();
         // The main event loop.
         // Wait forever to receive one interest for the prefix.
-        while ( publisher.stat ) {
+        while ( publisher.getStatus() ) {
             face.processEvents();
             // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
             usleep(100);
