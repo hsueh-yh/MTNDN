@@ -29,5 +29,13 @@
 !/publisher/*.cpp
 !/publisher/util/
 
+!/monitor/
+!/monitor/Makefile
+!/monitor/*.h
+!/monitor/*.hpp
+!/monitor/*.c
+!/monitor/*.cpp
+!/monitor/util/
+
 /publisher/out.264
 /publisher/out.mp4
