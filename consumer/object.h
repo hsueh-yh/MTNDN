@@ -39,7 +39,7 @@ public:
         
 class NdnRtcComponent :
 		public INdnRtcComponentCallback,
-		public boost::enable_shared_from_this<NdnRtcComponent>
+        public ptr_lib::enable_shared_from_this<NdnRtcComponent>
 {
 public:
     // construction/desctruction

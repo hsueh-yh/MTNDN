@@ -112,7 +112,7 @@ static std::string getUnixSocketFilePathForLocalhost()
     }
 }
 
-static ptr_lib::shared_ptr<ndn::Transport> getDefaultTransport(asio::io_service& ioService)
+static ptr_lib::shared_ptr<ndn::Transport> getDefaultTransport(boost::asio::io_service& ioService)
 {
     if (getUnixSocketFilePathForLocalhost() == "")
 #ifdef USE_TS_FACE

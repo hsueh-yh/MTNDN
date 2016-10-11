@@ -46,11 +46,11 @@ public:
 	static void startBackgroundThread();
 	static void stopBackgroundThread();
 	static bool isBackgroundThread();
-	static void dispatchOnBackgroundThread(boost::function<void(void)> dispatchBlock,
-										   boost::function<void(void)> onCompletion = boost::function<void(void)>());
+    static void dispatchOnBackgroundThread(boost::function<void(void)> dispatchBlock,
+                                           boost::function<void(void)> onCompletion = boost::function<void(void)>());
 	// synchronous version of dispatchOnBackgroundThread
-	static void performOnBackgroundThread(boost::function<void(void)> dispatchBlock,
-										   boost::function<void(void)> onCompletion = boost::function<void(void)>());
+    static void performOnBackgroundThread(boost::function<void(void)> dispatchBlock,
+                                           boost::function<void(void)> onCompletion = boost::function<void(void)>());
 
     static void createLibFace(const std::string host, const int port/*const new_api::GeneralParams& params*/);
 	static ptr_lib::shared_ptr<FaceProcessor> getLibFace();

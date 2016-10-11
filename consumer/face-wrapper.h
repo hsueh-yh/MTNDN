@@ -11,6 +11,7 @@
 #include <mutex>
 #include <ndn-cpp/face.hpp>
 
+// use boost (ioservice) only to run threadSafeFace
 #include <boost/asio/steady_timer.hpp>
 #include <boost/atomic.hpp>
 #include <boost/asio/basic_waitable_timer.hpp>
@@ -18,7 +19,6 @@
 
 #include <iostream>
 #include <chrono>
-
 
 #include "object.h"
 #include "utils.h"

@@ -170,7 +170,6 @@ Pipeliner::express(Interest& interest/*, int64_t priority*/)
 {
     faceWrapper_->expressInterest(
             interest,
-            //boost::bind(&Pipeliner::onData,this,),
             func_lib::bind(&Pipeliner::onData, this, func_lib::_1, func_lib::_2),
             func_lib::bind(&Pipeliner::onTimeout, this, func_lib::_1) );
             //bind2nd(bind(&Pipeliner::onData, this, func_lib::_1, func_lib::_2),
