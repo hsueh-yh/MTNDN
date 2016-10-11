@@ -78,7 +78,7 @@ typedef struct _SlidingAverage {
 //********************************************************************************
 
 static boost::asio::io_service* NdnRtcIoService;
-static boost::shared_ptr<FaceProcessor> LibraryFace;
+static ptr_lib::shared_ptr<FaceProcessor> LibraryFace;
 
 /*
 static std::vector<FrequencyMeter> freqMeters_;
@@ -92,9 +92,9 @@ static VoiceEngine *VoiceEngineInstance = NULL;
 */
 
 static boost::thread backgroundThread;
-static boost::shared_ptr<boost::asio::io_service::work> backgroundWork;
+static ptr_lib::shared_ptr<boost::asio::io_service::work> backgroundWork;
 
-static boost::shared_ptr<KeyChain> DefaultKeyChain(new KeyChain());
+static ptr_lib::shared_ptr<KeyChain> DefaultKeyChain(new KeyChain());
 
 //void initVE();
 void resetThread();
@@ -209,7 +209,7 @@ void NdnRtcUtils::createLibFace(const std::string host, const int port/*const ne
     }
 }
 
-boost::shared_ptr<FaceProcessor> NdnRtcUtils::getLibFace()
+ptr_lib::shared_ptr<FaceProcessor> NdnRtcUtils::getLibFace()
 {
     return LibraryFace;
 }

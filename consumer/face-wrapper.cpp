@@ -26,23 +26,23 @@
 //#include "object.h"
 //#include "ndnrtc-utils.h"
 
-using namespace boost;
+using namespace ndn;
 
 //******************************************************************************
-FaceWrapper::FaceWrapper(shared_ptr<Face> &face):
+FaceWrapper::FaceWrapper(ptr_lib::shared_ptr<Face> &face):
 face_(face)
 {
 }
 
 //******************************************************************************
 uint64_t FaceWrapper::expressInterest(const Interest &interest,
-                                      const OnData &onData,
+                                      const OnData& onData,
                                       const OnTimeout& onTimeout,
                                       WireFormat& wireFormat)
 {
     uint64_t iid = 0;
     
-    lock_guard<recursive_mutex> scopedLock(faceMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(faceMutex_);
     iid = face_->expressInterest(interest, onData, onTimeout, wireFormat);
     
     return iid;
@@ -51,17 +51,17 @@ uint64_t FaceWrapper::expressInterest(const Interest &interest,
 void
 FaceWrapper::removePendingInterest(uint64_t interestId)
 {
-    lock_guard<recursive_mutex> scopedLock(faceMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(faceMutex_);
     face_->removePendingInterest(interestId);
 }
 
 uint64_t FaceWrapper::registerPrefix(const Name& prefix,
-                                     const OnInterest& onInterest,
+                                     const OnInterestCallback& onInterest,
                                      const OnRegisterFailed& onRegisterFailed,
                                      const ForwardingFlags& flags,
                                      WireFormat& wireFormat)
 {
-    lock_guard<recursive_mutex> scopedLock(faceMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(faceMutex_);
     return face_->registerPrefix(prefix, onInterest, onRegisterFailed,
 								flags, wireFormat);
 }
@@ -69,7 +69,7 @@ uint64_t FaceWrapper::registerPrefix(const Name& prefix,
 void
 FaceWrapper::unregisterPrefix(uint64_t prefixId)
 {
-    lock_guard<recursive_mutex> scopedLock(faceMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(faceMutex_);
     face_->removeRegisteredPrefix(prefixId);
 }
 
@@ -77,19 +77,19 @@ void
 FaceWrapper::setCommandSigningInfo(KeyChain& keyChain,
                                    const Name& certificateName)
 {
-    lock_guard<recursive_mutex> scopedLock(faceMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(faceMutex_);
     face_->setCommandSigningInfo(keyChain, certificateName);
 }
 
 void FaceWrapper::processEvents()
 {
-    lock_guard<recursive_mutex> scopedLock(faceMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(faceMutex_);
     face_->processEvents();
 }
 
 void FaceWrapper::shutdown()
 {
-    lock_guard<recursive_mutex> scopedLock(faceMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(faceMutex_);
     face_->shutdown();
 }
 
@@ -112,37 +112,37 @@ static std::string getUnixSocketFilePathForLocalhost()
     }
 }
 
-static shared_ptr<ndn::Transport> getDefaultTransport(asio::io_service& ioService)
+static ptr_lib::shared_ptr<ndn::Transport> getDefaultTransport(asio::io_service& ioService)
 {
     if (getUnixSocketFilePathForLocalhost() == "")
 #ifdef USE_TS_FACE
-        return make_shared<AsyncTcpTransport>(ioService);
+        return ptr_lib::make_shared<AsyncTcpTransport>(ioService);
 #else
-    return make_shared<TcpTransport>();
+    return ptr_lib::make_shared<TcpTransport>();
 #endif
     else
 #ifdef USE_TS_FACE
-        return make_shared<AsyncUnixTransport>(ioService);
+        return ptr_lib::make_shared<AsyncUnixTransport>(ioService);
 #else
-        return make_shared<UnixTransport>();
+        return ptr_lib::make_shared<UnixTransport>();
 #endif
 }
 
-static shared_ptr<ndn::Transport::ConnectionInfo> getDefaultConnectionInfo()
+static ptr_lib::shared_ptr<ndn::Transport::ConnectionInfo> getDefaultConnectionInfo()
 {
     std::string filePath = getUnixSocketFilePathForLocalhost();
     if (filePath == "")
 #ifdef USE_TS_FACE
-        return make_shared<AsyncTcpTransport::ConnectionInfo>("localhost");
+        return ptr_lib::make_shared<AsyncTcpTransport::ConnectionInfo>("localhost");
 #else
-        return make_shared<TcpTransport::ConnectionInfo>("localhost");
+        return ptr_lib::make_shared<TcpTransport::ConnectionInfo>("localhost");
 #endif
     else
 #ifdef USE_TS_FACE
-        return shared_ptr<AsyncUnixTransport::ConnectionInfo>
+        return ptr_lib::shared_ptr<AsyncUnixTransport::ConnectionInfo>
         (new AsyncUnixTransport::ConnectionInfo(filePath.c_str()));
 #else
-    return shared_ptr<UnixTransport::ConnectionInfo>
+    return ptr_lib::shared_ptr<UnixTransport::ConnectionInfo>
     (new UnixTransport::ConnectionInfo(filePath.c_str()));
 
 #endif
@@ -150,11 +150,11 @@ static shared_ptr<ndn::Transport::ConnectionInfo> getDefaultConnectionInfo()
 
 int
 FaceProcessor::setupFaceAndTransport(const std::string host, const int port,
-                                     shared_ptr<FaceWrapper>& face,
-                                     shared_ptr<ndn::Transport>& transport)
+                                     ptr_lib::shared_ptr<FaceWrapper>& face,
+                                     ptr_lib::shared_ptr<ndn::Transport>& transport)
 {
-    shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
-    shared_ptr<Face> ndnFace;
+    ptr_lib::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
+    ptr_lib::shared_ptr<Face> ndnFace;
     
     if (host == "127.0.0.1" || host == "0.0.0.0" || host == "localhost")
     {
@@ -183,14 +183,14 @@ FaceProcessor::setupFaceAndTransport(const std::string host, const int port,
     return RESULT_OK;
 }
 
-boost::shared_ptr<FaceProcessor>
+ptr_lib::shared_ptr<FaceProcessor>
 FaceProcessor::createFaceProcessor(const std::string host, const int port,
-                                   const boost::shared_ptr<ndn::KeyChain>& keyChain,
-                                   const boost::shared_ptr<Name>& certificateName)
+                                   const ptr_lib::shared_ptr<ndn::KeyChain>& keyChain,
+                                   const ptr_lib::shared_ptr<Name>& certificateName)
 {
-    shared_ptr<FaceWrapper> face;
-    shared_ptr<ndn::Transport> transport;
-    shared_ptr<FaceProcessor> fp;
+    ptr_lib::shared_ptr<FaceWrapper> face;
+    ptr_lib::shared_ptr<ndn::Transport> transport;
+    ptr_lib::shared_ptr<FaceProcessor> fp;
     
     //std::cout << "setup Face And Transport..." << std::endl;
     FaceProcessor::setupFaceAndTransport(host, port, face, transport);
@@ -219,7 +219,7 @@ FaceProcessor::createFaceProcessor(const std::string host, const int port,
 }
 
 //******************************************************************************
-FaceProcessor::FaceProcessor(const boost::shared_ptr<FaceWrapper>& faceWrapper):
+FaceProcessor::FaceProcessor(const ptr_lib::shared_ptr<FaceWrapper>& faceWrapper):
 							isProcessing_(false),
 							usecInterval_(100),
 							faceWrapper_(faceWrapper)

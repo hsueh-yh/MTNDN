@@ -53,7 +53,7 @@ public:
 										   boost::function<void(void)> onCompletion = boost::function<void(void)>());
 
     static void createLibFace(const std::string host, const int port/*const new_api::GeneralParams& params*/);
-	static boost::shared_ptr<FaceProcessor> getLibFace();
+	static ptr_lib::shared_ptr<FaceProcessor> getLibFace();
 	static void destroyLibFace();
 
 

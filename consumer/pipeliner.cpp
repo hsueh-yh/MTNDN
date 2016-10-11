@@ -14,7 +14,7 @@
 #include "frame-data.h"
 #include "logger.hpp"
 
-using namespace std;
+using namespace ndn::func_lib;
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -53,8 +53,7 @@ PipelinerWindow::reset()
 void
 PipelinerWindow::dataArrived(PacketNumber packetNo)
 {
-    boost::lock_guard<boost::mutex> scopedLock(mutex_);
-
+    std::lock_guard<std::mutex> scopedLock(mutex_);
     std::set<PacketNumber>::iterator it = framePool_.find(packetNo);
 
     if (it != framePool_.end())
@@ -68,7 +67,7 @@ PipelinerWindow::dataArrived(PacketNumber packetNo)
 bool
 PipelinerWindow::canAskForData(PacketNumber packetNo)
 {
-    boost::lock_guard<boost::mutex> scopedLock(mutex_);
+    std::lock_guard<std::mutex> scopedLock(mutex_);
 
     bool added = false;
     if (w_ > 0)
@@ -157,7 +156,7 @@ Pipeliner::~Pipeliner()
 
 
 void
-Pipeliner::init(boost::shared_ptr<FrameBuffer> frameBuffer, boost::shared_ptr<FaceWrapper> faceWrapper)
+Pipeliner::init(ptr_lib::shared_ptr<FrameBuffer> frameBuffer, ptr_lib::shared_ptr<FaceWrapper> faceWrapper)
 {
     frameBuffer_ = frameBuffer;
     faceWrapper_ = faceWrapper;
@@ -171,8 +170,11 @@ Pipeliner::express(Interest& interest/*, int64_t priority*/)
 {
     faceWrapper_->expressInterest(
             interest,
-            bind(&Pipeliner::onData, this, _1, _2),
-            bind(&Pipeliner::onTimeout, this, _1));
+            //boost::bind(&Pipeliner::onData,this,),
+            func_lib::bind(&Pipeliner::onData, this, func_lib::_1, func_lib::_2),
+            func_lib::bind(&Pipeliner::onTimeout, this, func_lib::_1) );
+            //bind2nd(bind(&Pipeliner::onData, this, func_lib::_1, func_lib::_2),
+            //bind(&Pipeliner::onTimeout, this, func_lib::_1));
 
 #ifdef __SHOW_CONSOLE_
     int componentCount = interest.getName().getComponentCount();
@@ -187,8 +189,10 @@ Pipeliner::express(Name& name/*, int64_t priority*/)
 {
     faceWrapper_->expressInterest(
             name,
-            bind(&Pipeliner::onData, this, _1, _2),
-            bind(&Pipeliner::onTimeout, this, _1));
+            func_lib::bind(&Pipeliner::onData, this, func_lib::_1, func_lib::_2),
+            func_lib::bind(&Pipeliner::onTimeout, this, func_lib::_1) );
+            //bind(&Pipeliner::onData, this, std::placeholders::_1, std::placeholders::_2),
+            //bind(&Pipeliner::onTimeout, this, std::placeholders::_1));
     statistic->addRequest();
     LOG(INFO) << "Express Interest " << name.to_uri() << endl;
 
@@ -215,9 +219,9 @@ Pipeliner::requestFrame(PacketNumber& frameNo)
     Name packetPrefix(basePrefix_);
     packetPrefix.append(NdnRtcUtils::componentFromInt(frameNo));
     //packetPrefix.appendTimestamp(NdnRtcUtils::microsecondTimestamp());
-    //boost::shared_ptr<Interest> frameInterest = getDefaultInterest(packetPrefix);
+    //ptr_lib::shared_ptr<Interest> frameInterest = getDefaultInterest(packetPrefix);
 
-    boost::shared_ptr<FrameBuffer::Slot> slot;
+    ptr_lib::shared_ptr<FrameBuffer::Slot> slot;
 
     slot.reset(new FrameBuffer::Slot());
     slot->lock();
@@ -233,7 +237,7 @@ Pipeliner::requestFrame(PacketNumber& frameNo)
         //cout << ".";
     }
 
-    frameBuffer_->activeSlots_.insert(std::pair<int,boost::shared_ptr<FrameBuffer::Slot>>(frameNo,slot));
+    frameBuffer_->activeSlots_.insert(std::pair<int,ptr_lib::shared_ptr<FrameBuffer::Slot>>(frameNo,slot));
     //frameBuffer_->unlock();
 
     slot->unlock();
@@ -272,10 +276,10 @@ Pipeliner::stop()
 }
 
 
-boost::shared_ptr<Interest>
+ptr_lib::shared_ptr<Interest>
 Pipeliner::getDefaultInterest(const ndn::Name &prefix, int64_t timeoutMs)
 {
-    boost::shared_ptr<Interest> interest(new Interest(prefix));
+    ptr_lib::shared_ptr<Interest> interest(new Interest(prefix));
     interest->setMustBeFresh(true);
 
     return interest;

@@ -6,8 +6,9 @@
 #ifndef __face_wrapper__
 #define __face_wrapper__
 
-#include <boost/thread/mutex.hpp>
-#include <boost/thread.hpp>
+
+#include <thread>
+#include <mutex>
 #include <ndn-cpp/face.hpp>
 
 #include <boost/asio/steady_timer.hpp>
@@ -17,7 +18,6 @@
 
 #include <iostream>
 #include <chrono>
-#include <boost/chrono.hpp>
 
 
 #include "object.h"
@@ -37,12 +37,12 @@ class FaceWrapper //: public ndnlog::new_api::ILoggingObject
 {
 public:
     FaceWrapper(){}
-    FaceWrapper(boost::shared_ptr<Face> &face_);
+    FaceWrapper(ptr_lib::shared_ptr<Face> &face_);
     ~FaceWrapper(){}
 
     void
-    setFace(boost::shared_ptr<Face> face) { face_ = face; }
-    boost::shared_ptr<Face>
+    setFace(ptr_lib::shared_ptr<Face> face) { face_ = face; }
+    ptr_lib::shared_ptr<Face>
     getFace() { return face_; }
         
     uint64_t
@@ -56,7 +56,7 @@ public:
         
     uint64_t
     registerPrefix(const Name& prefix,
-                    const OnInterest& onInterest,
+                    const OnInterestCallback& onInterest,
                     const OnRegisterFailed& onRegisterFailed,
                     const ForwardingFlags& flags = ForwardingFlags(),
                     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -82,14 +82,14 @@ public:
     synchronizeStop() { faceMutex_.unlock(); }
         
 private:
-    boost::shared_ptr<Face> face_;
-    boost::recursive_mutex faceMutex_;
+    ptr_lib::shared_ptr<Face> face_;
+    ptr_lib::recursive_mutex faceMutex_;
 };
     
 class FaceProcessor : public NdnRtcComponent
 {
 public:
-    FaceProcessor(const boost::shared_ptr<FaceWrapper>& faceWrapper);
+    FaceProcessor(const ptr_lib::shared_ptr<FaceWrapper>& faceWrapper);
     ~FaceProcessor();
         
     int
@@ -102,39 +102,40 @@ public:
     setProcessingInterval(unsigned int usecInterval)
     { usecInterval_ = usecInterval; }
         
-    boost::shared_ptr<FaceWrapper>
+    ptr_lib::shared_ptr<FaceWrapper>
     getFaceWrapper()
     { return faceWrapper_; }
         
-    boost::shared_ptr<Transport>
+    ptr_lib::shared_ptr<Transport>
     getTransport()
     { return transport_; }
         
     void
-    setTransport(boost::shared_ptr<Transport>& transport)
+    setTransport(ptr_lib::shared_ptr<Transport>& transport)
     { transport_ = transport; }
         
     static int
     setupFaceAndTransport(const std::string host, const int port,
-                            boost::shared_ptr<FaceWrapper>& face,
-                            boost::shared_ptr<Transport>& transport);
+                            ptr_lib::shared_ptr<FaceWrapper>& face,
+                            ptr_lib::shared_ptr<Transport>& transport);
         
-    static boost::shared_ptr<FaceProcessor>
+    static ptr_lib::shared_ptr<FaceProcessor>
     createFaceProcessor(const std::string host, const int port,
-                        const boost::shared_ptr<ndn::KeyChain>& keyChain = boost::shared_ptr<ndn::KeyChain>(),
-                        const boost::shared_ptr<Name>& certificateName = boost::shared_ptr<Name>());
+                        const ptr_lib::shared_ptr<ndn::KeyChain>& keyChain = ptr_lib::shared_ptr<ndn::KeyChain>(),
+                        const ptr_lib::shared_ptr<Name>& certificateName = ptr_lib::shared_ptr<Name>());
 
 
 protected:
-    boost::atomic<bool> isJobScheduled_;
-    boost::recursive_mutex jobMutex_;
+
+    ptr_lib::atomic<bool> isJobScheduled_;
+    ptr_lib::recursive_mutex jobMutex_;
 
 private:
     bool isProcessing_;
 	unsigned int usecInterval_;
-	boost::shared_ptr<FaceWrapper> faceWrapper_;
-	boost::shared_ptr<Transport> transport_;
-	boost::thread processEventsThread_;
+    ptr_lib::shared_ptr<FaceWrapper> faceWrapper_;
+    ptr_lib::shared_ptr<Transport> transport_;
+    ptr_lib::thread processEventsThread_;
 
 
     bool isTimerCancelled_;

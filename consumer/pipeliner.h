@@ -59,7 +59,7 @@ private:
     int w_;             // current window size
     bool isInitialized_;
     PacketNumber lastAddedToPool_;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     std::set<PacketNumber> framePool_;
     const FrameBuffer* frameBuffer_;
 };
@@ -82,7 +82,7 @@ public:
 
     //******************************************************************************
 
-    void init(boost::shared_ptr<FrameBuffer> frameBuffer, boost::shared_ptr<FaceWrapper> faceWrapper);
+    void init(ptr_lib::shared_ptr<FrameBuffer> frameBuffer, ptr_lib::shared_ptr<FaceWrapper> faceWrapper);
 
     void express(Name& name);
 
@@ -99,7 +99,7 @@ public:
     Pipeliner::State getState()
     { lock(); Pipeliner::State stat = state_; unlock(); return stat;  }
 
-    boost::shared_ptr<Interest>
+    ptr_lib::shared_ptr<Interest>
     getDefaultInterest(const Name& prefix, int64_t timeoutMs = 0);
 
     //******************************************************************************
@@ -118,8 +118,8 @@ private:
 
     Name basePrefix_;
 
-    boost::shared_ptr<FaceWrapper> faceWrapper_;
-    boost::shared_ptr<FrameBuffer> frameBuffer_;
+    ptr_lib::shared_ptr<FaceWrapper> faceWrapper_;
+    ptr_lib::shared_ptr<FrameBuffer> frameBuffer_;
     PipelinerWindow window_;
 
     //FILE *pipelinerFIle_;

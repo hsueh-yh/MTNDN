@@ -283,7 +283,7 @@ FrameBuffer::dataArrived(const ndn::ptr_lib::shared_ptr<Data>& data)
 {
     int componentCount = data->getName().getComponentCount();
     FrameNumber frameNo = std::atoi(data->getName().get(componentCount-1).toEscapedString().c_str());
-    map<int, boost::shared_ptr<Slot> >::iterator iter;
+    map<int, ptr_lib::shared_ptr<Slot> >::iterator iter;
     iter = activeSlots_.find(frameNo);
 
     if ( iter == activeSlots_.end() )
@@ -300,7 +300,7 @@ FrameBuffer::dataMissed(const ptr_lib::shared_ptr<const Interest>& interest )
 {
     int componentCount = interest->getName().getComponentCount();
     FrameNumber frameNo = std::atoi(interest->getName().get(componentCount-1).toEscapedString().c_str());
-    map<int, boost::shared_ptr<Slot> >::iterator iter;
+    map<int, ptr_lib::shared_ptr<Slot> >::iterator iter;
     iter = activeSlots_.find(frameNo);
 
     if ( iter == activeSlots_.end() )
@@ -308,7 +308,7 @@ FrameBuffer::dataMissed(const ptr_lib::shared_ptr<const Interest>& interest )
         cout << "FrameBuffer::dataMissed Error " << endl;
         return;
     }
-    boost::shared_ptr<Slot> slot = iter->second;
+    ptr_lib::shared_ptr<Slot> slot = iter->second;
     slot->markMissed();
 
     LOG(INFO) << "[FrameBuffer] miss " << interest->getName().to_uri()
@@ -316,7 +316,7 @@ FrameBuffer::dataMissed(const ptr_lib::shared_ptr<const Interest>& interest )
 }
 
 void
-FrameBuffer::setSlot(const ndn::ptr_lib::shared_ptr<Data>& data, boost::shared_ptr<FrameBuffer::Slot> slot)
+FrameBuffer::setSlot(const ndn::ptr_lib::shared_ptr<Data>& data, ptr_lib::shared_ptr<FrameBuffer::Slot> slot)
 {
     FrameData gotFrame;
     memcpy(&gotFrame, data->getContent().buf(), sizeof(FrameData));  //copy frame header
@@ -352,9 +352,9 @@ FrameBuffer::setSlot(const ndn::ptr_lib::shared_ptr<Data>& data, boost::shared_p
 }
 
 bool
-FrameBuffer::pushSlot(boost::shared_ptr<Slot> slot)
+FrameBuffer::pushSlot(ptr_lib::shared_ptr<Slot> slot)
 {
-    std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
+    ptr_lib::lock_guard<ptr_lib::recursive_mutex> scopedLock(syncMutex_);
 
     if(activeSlots_count_ >= 50)
     {
@@ -369,7 +369,7 @@ FrameBuffer::pushSlot(boost::shared_ptr<Slot> slot)
     return true;
 }
 
-boost::shared_ptr<FrameBuffer::Slot>
+ptr_lib::shared_ptr<FrameBuffer::Slot>
 FrameBuffer::popSlot()
 {
     std::lock_guard<std::recursive_mutex> scopedLock(syncMutex_);
@@ -380,7 +380,7 @@ FrameBuffer::popSlot()
         return NULL;
     }
 
-    boost::shared_ptr<Slot>  tmp;
+    ptr_lib::shared_ptr<Slot>  tmp;
     tmp = playbackQueue_.top();
 	//FrameBuffer::Slot*  tmp = priorityQueue_.front();
 
@@ -395,7 +395,7 @@ FrameBuffer::popSlot()
         return NULL;
     }
 
-    map<int, boost::shared_ptr<Slot> >::iterator iter;
+    map<int, ptr_lib::shared_ptr<Slot> >::iterator iter;
 
     iter = activeSlots_.find(tmp->getNumber());
     if( iter != activeSlots_.end() )

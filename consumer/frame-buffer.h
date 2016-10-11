@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <functional>
-//#include <boost/thread/mutex.hpp>
 #include <thread>
 #include <mutex>
 
@@ -56,7 +55,7 @@ public:
 		public:
 			Comparator(bool inverted = false):inverted_(inverted){}
 
-            bool operator() (const boost::shared_ptr<Slot> slot1, const boost::shared_ptr<Slot> slot2)
+            bool operator() (const ptr_lib::shared_ptr<Slot> slot1, const ptr_lib::shared_ptr<Slot> slot2)
 			{
                 return slot1->getNumber() > slot2->getNumber();
 			}
@@ -210,15 +209,15 @@ public:
     void
     unlock() { syncMutex_.unlock(); }
 
-    bool pushSlot(boost::shared_ptr<Slot> slot);
+    bool pushSlot(ptr_lib::shared_ptr<Slot> slot);
 
-    void setSlot(const ndn::ptr_lib::shared_ptr<Data>& data, boost::shared_ptr<Slot> slot);
+    void setSlot(const ndn::ptr_lib::shared_ptr<Data>& data, ptr_lib::shared_ptr<Slot> slot);
 
     void dataArrived(const ndn::ptr_lib::shared_ptr<Data>& data);
 
     void dataMissed(const ptr_lib::shared_ptr<const Interest>& interest );
 
-    boost::shared_ptr<FrameBuffer::Slot> popSlot();
+    ptr_lib::shared_ptr<FrameBuffer::Slot> popSlot();
 
 
 	//bool status_;
@@ -279,7 +278,7 @@ public:
     };
 */
 
-    typedef boost::shared_ptr<Slot> SlotPtr;
+    typedef ptr_lib::shared_ptr<Slot> SlotPtr;
 
     typedef
         priority_queue< SlotPtr, vector<SlotPtr>, Slot::Comparator/*greater<Slot::Comparator>*/ >
@@ -290,10 +289,10 @@ public:
     State stat_;
 
     //PriorityQueue priorityQueue_;
-	std::recursive_mutex syncMutex_;
+    std::recursive_mutex syncMutex_;
 
-    //std::vector<boost::shared_ptr<Slot> > issuedSlots_;
-    std::map<int, boost::shared_ptr<Slot> > activeSlots_;
+    //std::vector<ptr_lib::shared_ptr<Slot> > issuedSlots_;
+    std::map<int, ptr_lib::shared_ptr<Slot> > activeSlots_;
     PlaybackQueue playbackQueue_;
 
     int activeSlots_count_;

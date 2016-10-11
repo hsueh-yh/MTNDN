@@ -10,16 +10,16 @@
 //
 
 #include <stdarg.h>
-#include <boost/thread/lock_guard.hpp>
-#include <boost/chrono.hpp>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
 
 #include "object.h"
 #include "utils.h"
 
 using namespace std;
-
-using namespace boost;
+using namespace ndn;
 
 //******************************************************************************
 /**
@@ -51,12 +51,12 @@ void NdnRtcComponent::onError(const char *errorMessage, const int errorCode)
 {
     if (hasCallback())
     {
-        lock_guard<mutex> scopedLock(callbackMutex_);
+        ptr_lib::lock_guard<ptr_lib::mutex> scopedLock(callbackMutex_);
         callback_->onError(errorMessage, errorCode);
     }
     else
     {
-		cout << "error" << endl;
+        std::cout << "error" << std::endl;
         //LogErrorC << "error occurred: " << string(errorMessage) << endl;
         //if (logger_) logger_->flush();
     }
@@ -99,49 +99,49 @@ int NdnRtcComponent::notifyError(const int ecode, const char *format, ...)
 //}
 
 
-thread
-NdnRtcComponent::startThread(boost::function<bool ()> threadFunc)
-{
-    thread threadObject = thread([threadFunc](){
-        bool result = false;
-        do {
-            try
-            {
-                this_thread::interruption_point();
-                {
-                    this_thread::disable_interruption di;
-                    result = threadFunc();
-                }
-            }
-            catch (thread_interrupted &interruption)
-            {
-                result = false;
-            }
-        } while (result);
-    });
+//ptr_lib::thread
+//NdnRtcComponent::startThread(ptr_lib::function<bool ()> threadFunc)
+//{
+//    ptr_lib::thread threadObject = ptr_lib::thread([threadFunc](){
+//        bool result = false;
+//        do {
+//            try
+//            {
+//                ptr_lib::this_thread::interruption_point();
+//                {
+//                    ptr_lib::this_thread::disable_interruption di;
+//                    result = threadFunc();
+//                }
+//            }
+//            catch (thread_interrupted &interruption)
+//            {
+//                result = false;
+//            }
+//        } while (result);
+//    });
     
-    return threadObject;
-}
+//    return threadObject;
+//}
 
-
-void
-NdnRtcComponent::stopThread(thread &threadObject)
-{
-    threadObject.interrupt();
+//void
+//NdnRtcComponent::stopThread(thread &threadObject)
+//{
+//    threadObject.interrupt();
     
-    if (threadObject.joinable())
-    {
-        bool res = threadObject.try_join_for(boost::chrono::milliseconds(500));
+//    if (threadObject.joinable())
+//    {
+//        bool res = threadObject.try_join_for(boost::chrono::milliseconds(500));
                                              
-        if (!res)
-            threadObject.detach();
-    }
-}
+//        if (!res)
+//            threadObject.detach();
+//    }
+//}
+
 
 void NdnRtcComponent::scheduleJob(const unsigned int usecInterval,
-                                  boost::function<bool()> jobCallback)
+                                  std::function<bool()> jobCallback)
 {
-    boost::lock_guard<boost::recursive_mutex> scopedLock(this->jobMutex_);
+    std::lock_guard<std::recursive_mutex> scopedLock(this->jobMutex_);
     
     watchdogTimer_.expires_from_now(std::chrono::microseconds(usecInterval));
     //watchdogTimer_.expires_from_now(boost::posix_time::milliseconds(usecInterval));
@@ -155,7 +155,7 @@ void NdnRtcComponent::scheduleJob(const unsigned int usecInterval,
             if (!isTimerCancelled_)
             {
                 isJobScheduled_ = false;
-                boost::lock_guard<boost::recursive_mutex> scopedLock(this->jobMutex_);
+                std::lock_guard<std::recursive_mutex> scopedLock(this->jobMutex_);
                 bool res = jobCallback();
                 if (res)
                     this->scheduleJob(usecInterval, jobCallback);
@@ -169,7 +169,7 @@ void NdnRtcComponent::scheduleJob(const unsigned int usecInterval,
 void NdnRtcComponent::stopJob()
 {
     NdnRtcUtils::performOnBackgroundThread([this]()->void{
-        boost::lock_guard<boost::recursive_mutex> scopedLock(jobMutex_);
+        std::lock_guard<std::recursive_mutex> scopedLock(jobMutex_);
         watchdogTimer_.cancel();
         isTimerCancelled_ = true;
     });

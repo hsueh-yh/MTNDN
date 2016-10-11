@@ -4,7 +4,7 @@
 
 //static boost::asio::io_service libIoService;
 
-Consumer::Consumer (std::string uri, boost::shared_ptr<FaceWrapper> faceWrapper) :
+Consumer::Consumer (std::string uri, ptr_lib::shared_ptr<FaceWrapper> faceWrapper) :
     callbackCount_ ( 0 ),
     status_(STOPED),
     prefix_(uri),

@@ -11,7 +11,6 @@
 #ifndef __frame_data__
 #define __frame_data__
 
-#include <boost/crc.hpp>
 #include <ndn-cpp/name.hpp>
 
 #include "common.h"

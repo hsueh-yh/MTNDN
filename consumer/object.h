@@ -20,6 +20,12 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/atomic.hpp>
 
+#include <mutex>
+#include <thread>
+#include <ndn-cpp/common.hpp>
+
+using namespace ndn;
+
 //#include "simple-log.h"
 //#include "params.h"
 //#include "interfaces.h"
@@ -58,9 +64,9 @@ public:
 */
 
 protected:
-    boost::atomic<bool> isJobScheduled_;
-    boost::mutex callbackMutex_;
-    boost::recursive_mutex jobMutex_;
+    ptr_lib::atomic<bool> isJobScheduled_;
+    ptr_lib::mutex callbackMutex_;
+    ptr_lib::recursive_mutex jobMutex_;
     INdnRtcComponentCallback *callback_ = nullptr;
             
 
@@ -68,10 +74,10 @@ protected:
     int notifyError(const int ecode, const char *format, ...);
     bool hasCallback() { return callback_ != NULL; }
             
-    boost::thread startThread(boost::function<bool()> threadFunc);
-    void stopThread(boost::thread &thread);
+    ptr_lib::thread startThread(ptr_lib::function<bool()> threadFunc);
+    void stopThread(ptr_lib::thread &thread);
     void scheduleJob(const unsigned int usecInterval,
-                        boost::function<bool()> jobCallback);
+                        ptr_lib::function<bool()> jobCallback);
     void stopJob();
 
 private:
