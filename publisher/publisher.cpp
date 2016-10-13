@@ -185,14 +185,14 @@ void Publisher::operator()
 	//cout << "Got an interest..." << endl;
 
 	Name requestName(interest->getName());
-	int componentCount = requestName.getComponentCount();
+	int componentCount = requestName.size();
 	string framenoStr = requestName.get(componentCount-1).toEscapedString();
 
 	long requestNo = std::atoi(framenoStr.c_str());
 	long responseNo = requestNo % frameCount_;
 
 	cout << "Request : " << requestNo
-			<< " by " << requestName.to_uri() << endl;
+			<< " by " << requestName.toUri() << endl;
 	
 	
 	FrameData *pframe;

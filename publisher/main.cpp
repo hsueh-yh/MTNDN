@@ -18,6 +18,9 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	try {
+		char prefixStr_[20] = "/video";
+		const char* prefixStr = argc == 1 ? prefixStr_ : argv[1];
+/*
 		boost::shared_ptr<ndn::Transport::ConnectionInfo> connInfo;
 		boost::shared_ptr<ndn::Transport> transport;
 
@@ -25,7 +28,7 @@ int main(int argc, char** argv)
 		transport.reset(new TcpTransport());
 
 		Face *face1 = new Face(transport, connInfo);
-
+*/
 
 		// The default Face will connect using a Unix socket, or to "localhost".
 		//Face face(HOST_DEFAULT,PORT_DEFAULT);
@@ -43,11 +46,11 @@ int main(int argc, char** argv)
 			return 0;
 		}
 
-		Name prefix("/video");
-		cout << "Register prefix  " << prefix.toUri() << endl;
+		Name prefix(prefixStr);
+		cout << "Register prefix  " << prefix.toUri() 
+			 << " ( isLocal = " << face.isLocal() << " ) " << endl;
 		// TODO: After we remove the registerPrefix with the deprecated OnInterest,
 		// we can remove the explicit cast to OnInterestCallback (needed for boost).
-		cout << face.isLocal() << endl;
 		face.registerPrefix(prefix, (const OnInterestCallback&)func_lib::ref(publisher), func_lib::ref(publisher));
 		
 
