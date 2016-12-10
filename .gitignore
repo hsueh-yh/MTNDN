@@ -9,26 +9,8 @@
 !*.cpp
 
 
-!/consumer/
-!/consumer/Makefile
-!/consumer/*.h
-!/consumer/*.hpp
-!/consumer/*.c
-!/consumer/*.cpp
-!/consumer/*.pro
-!/consumer/*.ui
-
-
-!/publisher/
-!/publisher/Makefile
-!/publisher/*.h
-!/publisher/*.hpp
-!/publisher/*.c
-!/publisher/*.cpp
-
-!/monitor/
-!/monitor/Makefile
-!/monitor/*.h
-!/monitor/*.hpp
-!/monitor/*.c
-!/monitor/*.cpp
+!consumer/include/*
+!consumer/src/*
+!consumer/client/
+!publisher/
+!monitor/
