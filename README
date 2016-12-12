@@ -34,4 +34,4 @@ sudo apt-get install -y build-essential libfaac-dev libfaad-dev libmp3lame-dev l
 make && make install
 *************************************************************
 
-
+move to repo monitor and capturer
